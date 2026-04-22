@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collection - LUXE WATCHES</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <div class="watch-loader">
+                <div class="watch-face">
+                    <div class="watch-hand hour-hand"></div>
+                    <div class="watch-hand minute-hand"></div>
+                    <div class="watch-center-dot"></div>
+                </div>
+            </div>
+            <p class="loader-text">LUXE WATCHES</p>
+        </div>
+    </div>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-inner">
+            <div class="top-bar-left">
+                <span><i class="fas fa-phone-alt"></i> +91 98765 43210</span>
+                <span><i class="fas fa-envelope"></i> info@luxewatches.com</span>
+            </div>
+            <div class="top-bar-right">
+                <span><i class="fas fa-shipping-fast"></i> Free Shipping on Orders Above ₹10,000</span>
+                <div class="social-links-top">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-inner">
+            <a href="index.html" class="logo">
+                <i class="fas fa-clock logo-icon"></i>
+                <div>
+                    <span class="logo-main">LUXE</span>
+                    <span class="logo-sub">WATCHES</span>
+                </div>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="collection.html" class="active">Collection</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="contact.html">Contact Us</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="https://wa.me/919876543210" class="nav-whatsapp" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Chat
+                </a>
+                <button class="hamburger" id="hamburger">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="page-header-overlay"></div>
+        <div class="container">
+            <h1>Our Collection</h1>
+            <nav class="breadcrumb">
+                <a href="index.html">Home</a> <span>/</span> <span>Collection</span>
+            </nav>
+        </div>
+    </section>
+
+    <!-- Collection Section -->
+    <section class="section collection-section">
+        <div class="container">
+            <div class="collection-layout">
+                <!-- Sidebar Filters -->
+                <aside class="filter-sidebar" id="filterSidebar">
+                    <div class="filter-header-mobile">
+                        <h3>Filters</h3>
+                        <button class="close-filter" id="closeFilter"><i class="fas fa-times"></i></button>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <h4><i class="fas fa-tags"></i> Category</h4>
+                        <div class="filter-options" id="categoryFilters">
+                            <!-- Categories loaded dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4><i class="fas fa-rupee-sign"></i> Price Range</h4>
+                        <div class="price-filter">
+                            <div class="price-inputs">
+                                <div class="price-input-group">
+                                    <label>Min (₹)</label>
+                                    <input type="number" id="minPrice" placeholder="0" min="0">
+                                </div>
+                                <span class="price-separator">—</span>
+                                <div class="price-input-group">
+                                    <label>Max (₹)</label>
+                                    <input type="number" id="maxPrice" placeholder="200000" min="0">
+                                </div>
+                            </div>
+                            <button class="btn-apply-price" id="applyPrice">Apply Price Filter</button>
+                        </div>
+                    </div>
+
+                    <button class="btn-reset-filter" id="resetFilters">
+                        <i class="fas fa-redo-alt"></i> Reset All Filters
+                    </button>
+                </aside>
+
+                <!-- Products Area -->
+                <div class="products-area">
+                    <div class="products-top-bar">
+                        <div class="results-info" id="resultsInfo">Showing all watches</div>
+                        <div class="top-bar-actions">
+                            <button class="filter-toggle-btn" id="filterToggle">
+                                <i class="fas fa-filter"></i> Filters
+                            </button>
+                            <div class="sort-select">
+                                <select id="sortSelect">
+                                    <option value="newest">Newest First</option>
+                                    <option value="price_low">Price: Low to High</option>
+                                    <option value="price_high">Price: High to Low</option>
+                                    <option value="name_asc">Name: A to Z</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="products-grid" id="collectionProducts">
+                        <!-- All products loaded here -->
+                    </div>
+
+                    <div class="pagination-wrapper" id="collectionPagination"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col brand-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <span class="logo-main">LUXE</span>
+                            <span class="logo-sub">WATCHES</span>
+                        </div>
+                    </div>
+                    <p>Your trusted destination for premium timepieces.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="collection.html">Collection</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="collection.html?category=Luxury">Luxury Watches</a></li>
+                        <li><a href="collection.html?category=Sports">Sports Watches</a></li>
+                        <li><a href="collection.html?category=Classic">Classic Watches</a></li>
+                        <li><a href="collection.html?category=Smart Watch">Smart Watches</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Get In Touch</h4>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> 123, Watch Street, Mumbai</li>
+                        <li><i class="fas fa-phone-alt"></i> +91 98765 43210</li>
+                        <li><i class="fas fa-envelope"></i> info@luxewatches.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Luxe Watches. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/919876543210?text=Hi! I'm interested in your watch collection." class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+        <span class="pulse-ring"></span>
+    </a>
+
+    <button class="scroll-top" id="scrollTop"><i class="fas fa-chevron-up"></i></button>
+
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initCollection();
+        });
+    </script>
+</body>
+</html>

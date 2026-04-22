@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUXE WATCHES - Premium Timepieces Collection</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <div class="watch-loader">
+                <div class="watch-face">
+                    <div class="watch-hand hour-hand"></div>
+                    <div class="watch-hand minute-hand"></div>
+                    <div class="watch-center-dot"></div>
+                </div>
+            </div>
+            <p class="loader-text">LUXE WATCHES</p>
+        </div>
+    </div>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-inner">
+            <div class="top-bar-left">
+                <span><i class="fas fa-phone-alt"></i> +91 98765 43210</span>
+                <span><i class="fas fa-envelope"></i> info@luxewatches.com</span>
+            </div>
+            <div class="top-bar-right">
+                <span><i class="fas fa-shipping-fast"></i> Free Shipping on Orders Above ₹10,000</span>
+                <div class="social-links-top">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-inner">
+            <a href="index.html" class="logo">
+                <i class="fas fa-clock logo-icon"></i>
+                <div>
+                    <span class="logo-main">LUXE</span>
+                    <span class="logo-sub">WATCHES</span>
+                </div>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="collection.html">Collection</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="contact.html">Contact Us</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="https://wa.me/919876543210" class="nav-whatsapp" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Chat
+                </a>
+                <button class="hamburger" id="hamburger">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Banner Slider -->
+    <section class="hero-banner" id="heroBanner">
+        <div class="banner-slider" id="bannerSlider">
+            <!-- Banners loaded from Supabase -->
+        </div>
+        <div class="banner-controls">
+            <button class="banner-btn prev-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+            <div class="banner-dots" id="bannerDots"></div>
+            <button class="banner-btn next-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </section>
+
+    <!-- Features Strip -->
+    <section class="features-strip">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon-wrap"><i class="fas fa-certificate"></i></div>
+                    <div><h4>100% Authentic</h4><p>Certified genuine watches</p></div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon-wrap"><i class="fas fa-truck"></i></div>
+                    <div><h4>Free Delivery</h4><p>On orders above ₹10,000</p></div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon-wrap"><i class="fas fa-shield-alt"></i></div>
+                    <div><h4>2 Year Warranty</h4><p>International warranty</p></div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon-wrap"><i class="fas fa-undo-alt"></i></div>
+                    <div><h4>Easy Returns</h4><p>7-day return policy</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Watches Section -->
+    <section class="section featured-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">✦ Curated Selection</span>
+                <h2 class="section-title">Featured Timepieces</h2>
+                <p class="section-subtitle">Handpicked luxury watches from our exclusive collection</p>
+                <div class="title-decoration">
+                    <span class="line"></span>
+                    <i class="fas fa-gem"></i>
+                    <span class="line"></span>
+                </div>
+            </div>
+            <div class="products-grid" id="featuredProducts">
+                <!-- Featured products loaded from Supabase -->
+            </div>
+            <div class="pagination-wrapper" id="featuredPagination"></div>
+            <div class="section-cta">
+                <a href="collection.html" class="btn-primary btn-large">
+                    View Full Collection <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="section why-us-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">✦ Our Promise</span>
+                <h2 class="section-title">Why Choose Luxe Watches</h2>
+                <div class="title-decoration">
+                    <span class="line"></span>
+                    <i class="fas fa-gem"></i>
+                    <span class="line"></span>
+                </div>
+            </div>
+            <div class="why-us-grid">
+                <div class="why-card">
+                    <div class="why-icon"><i class="fas fa-award"></i></div>
+                    <h3>Premium Quality</h3>
+                    <p>Every watch in our collection is sourced from authorized dealers and verified for authenticity.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon"><i class="fas fa-headset"></i></div>
+                    <h3>24/7 Support</h3>
+                    <p>Our dedicated team is always ready to assist you with any queries via WhatsApp or phone.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon"><i class="fas fa-hand-holding-heart"></i></div>
+                    <h3>Best Prices</h3>
+                    <p>We offer the most competitive prices with exclusive deals and seasonal offers.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon"><i class="fas fa-gem"></i></div>
+                    <h3>Exclusive Collection</h3>
+                    <p>Access rare and limited edition timepieces that you won't find anywhere else.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter-section">
+        <div class="container">
+            <div class="newsletter-content">
+                <div class="newsletter-text">
+                    <h2>Stay Updated</h2>
+                    <p>Get notified about new arrivals and exclusive deals on WhatsApp</p>
+                </div>
+                <a href="https://wa.me/919876543210?text=Hi! I want to receive updates about new watch collections and offers." class="btn-whatsapp-large" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Join Our WhatsApp Updates
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col brand-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <span class="logo-main">LUXE</span>
+                            <span class="logo-sub">WATCHES</span>
+                        </div>
+                    </div>
+                    <p>Your trusted destination for premium timepieces. We bring you the finest watches from around the world with guaranteed authenticity.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="collection.html">Collection</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="collection.html?category=Luxury">Luxury Watches</a></li>
+                        <li><a href="collection.html?category=Sports">Sports Watches</a></li>
+                        <li><a href="collection.html?category=Classic">Classic Watches</a></li>
+                        <li><a href="collection.html?category=Smart Watch">Smart Watches</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Get In Touch</h4>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> 123, Watch Street, Mumbai, India</li>
+                        <li><i class="fas fa-phone-alt"></i> +91 98765 43210</li>
+                        <li><i class="fas fa-envelope"></i> info@luxewatches.com</li>
+                        <li><i class="fas fa-clock"></i> Mon-Sat: 10AM - 8PM</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Luxe Watches. All Rights Reserved. Crafted with <i class="fas fa-heart"></i></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Float Button -->
+    <a href="https://wa.me/919876543210?text=Hi! I'm interested in your watch collection." class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+        <span class="pulse-ring"></span>
+    </a>
+
+    <!-- Scroll to Top -->
+    <button class="scroll-top" id="scrollTop"><i class="fas fa-chevron-up"></i></button>
+
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initBanners();
+            loadFeaturedProducts();
+        });
+    </script>
+</body>
+</html>
