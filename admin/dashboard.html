@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - LUXE WATCHES Admin</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-clock"></i>
+                <div>
+                    <span class="logo-main">LUXE</span>
+                    <span class="logo-sub">ADMIN</span>
+                </div>
+            </div>
+            <button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item active">
+                <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
+            </a>
+            <a href="products.html" class="nav-item">
+                <i class="fas fa-box"></i><span>Products</span>
+            </a>
+            <a href="banners.html" class="nav-item">
+                <i class="fas fa-images"></i><span>Banners</span>
+            </a>
+            <a href="messages.html" class="nav-item">
+                <i class="fas fa-envelope"></i><span>Messages</span>
+            </a>
+            <div class="nav-divider"></div>
+            <a href="../index.html" class="nav-item">
+                <i class="fas fa-globe"></i><span>View Website</span>
+            </a>
+            <a href="#" class="nav-item logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+                <h2>Dashboard</h2>
+            </div>
+            <div class="topbar-right">
+                <div class="admin-info">
+                    <div class="admin-avatar"><i class="fas fa-user-shield"></i></div>
+                    <span id="adminName">Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="content-area">
+            <!-- Stats Cards -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card stat-blue">
+                    <div class="stat-icon"><i class="fas fa-box"></i></div>
+                    <div class="stat-info">
+                        <h3 id="totalProducts">-</h3>
+                        <p>Total Products</p>
+                    </div>
+                </div>
+                <div class="stat-card stat-gold">
+                    <div class="stat-icon"><i class="fas fa-star"></i></div>
+                    <div class="stat-info">
+                        <h3 id="featuredProducts">-</h3>
+                        <p>Featured Products</p>
+                    </div>
+                </div>
+                <div class="stat-card stat-green">
+                    <div class="stat-icon"><i class="fas fa-images"></i></div>
+                    <div class="stat-info">
+                        <h3 id="activeBanners">-</h3>
+                        <p>Active Banners</p>
+                    </div>
+                </div>
+                <div class="stat-card stat-purple">
+                    <div class="stat-icon"><i class="fas fa-envelope"></i></div>
+                    <div class="stat-info">
+                        <h3 id="totalMessages">-</h3>
+                        <p>Messages</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Items -->
+            <div class="dashboard-grid">
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <h3><i class="fas fa-box"></i> Recent Products</h3>
+                        <a href="products.html" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="dash-card-body" id="recentProducts">
+                        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
+                    </div>
+                </div>
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <h3><i class="fas fa-envelope"></i> Recent Messages</h3>
+                        <a href="messages.html" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="dash-card-body" id="recentMessages">
+                        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <h3>Quick Actions</h3>
+                <div class="quick-actions-grid">
+                    <a href="products.html?action=add" class="quick-action-btn">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Add Product</span>
+                    </a>
+                    <a href="banners.html?action=add" class="quick-action-btn">
+                        <i class="fas fa-image"></i>
+                        <span>Add Banner</span>
+                    </a>
+                    <a href="messages.html" class="quick-action-btn">
+                        <i class="fas fa-envelope-open"></i>
+                        <span>View Messages</span>
+                    </a>
+                    <a href="../index.html" target="_blank" class="quick-action-btn">
+                        <i class="fas fa-external-link-alt"></i>
+                        <span>View Website</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/admin.js"></script>
+    <script>
+        checkAuth();
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+
+        async function loadDashboard() {
+            try {
+                // Stats
+                const { count: prodCount } = await adminQuery('products', { count: true, limit: 0 });
+                const { count: featCount } = await adminQuery('products', { count: true, limit: 0, filters: ['is_featured=eq.true'] });
+                const { count: bannerCount } = await adminQuery('banners', { count: true, limit: 0, filters: ['is_active=eq.true'] });
+                const { count: msgCount } = await adminQuery('contact_messages', { count: true, limit: 0 });
+
+                animateNumber('totalProducts', prodCount || 0);
+                animateNumber('featuredProducts', featCount || 0);
+                animateNumber('activeBanners', bannerCount || 0);
+                animateNumber('totalMessages', msgCount || 0);
+
+                // Recent Products
+                const { data: products } = await adminQuery('products', { order: 'created_at.desc', limit: 5 });
+                const prodContainer = document.getElementById('recentProducts');
+                if (products && products.length) {
+                    prodContainer.innerHTML = products.map(p => `
+                        <div class="recent-item">
+                            <img src="${p.image_url}" alt="${p.title}" class="recent-img" onerror="this.src='https://via.placeholder.com/50'">
+                            <div class="recent-info">
+                                <h4>${p.title}</h4>
+                                <span class="recent-meta">₹${Number(p.price).toLocaleString('en-IN')} • ${p.category || 'General'}</span>
+                            </div>
+                            ${p.is_featured ? '<span class="badge badge-gold">Featured</span>' : '<span class="badge badge-gray">Regular</span>'}
+                        </div>
+                    `).join('');
+                } else {
+                    prodContainer.innerHTML = '<p class="empty-text">No products yet</p>';
+                }
+
+                // Recent Messages
+                const { data: messages } = await adminQuery('contact_messages', { order: 'created_at.desc', limit: 5 });
+                const msgContainer = document.getElementById('recentMessages');
+                if (messages && messages.length) {
+                    msgContainer.innerHTML = messages.map(m => `
+                        <div class="recent-item">
+                            <div class="recent-avatar">${m.name.charAt(0).toUpperCase()}</div>
+                            <div class="recent-info">
+                                <h4>${m.name}</h4>
+                                <span class="recent-meta">${m.email}</span>
+                                <p class="recent-msg-preview">${m.message.substring(0, 60)}...</p>
+                            </div>
+                            <span class="recent-time">${timeAgo(m.created_at)}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    msgContainer.innerHTML = '<p class="empty-text">No messages yet</p>';
+                }
+
+            } catch (error) {
+                console.error('Dashboard error:', error);
+            }
+        }
+
+        function animateNumber(id, target) {
+            const el = document.getElementById(id);
+            let current = 0;
+            const increment = Math.max(1, Math.ceil(target / 40));
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) { current = target; clearInterval(timer); }
+                el.textContent = current;
+            }, 40);
+        }
+    </script>
+</body>
+</html>
