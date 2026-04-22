@@ -2,8 +2,21 @@ var SUPABASE_URL = "https://fxpxsmnakwqczgrhiwkl.supabase.co";
 var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4cHhzbW5ha3dxY3pncmhpd2tsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MjU5MzAsImV4cCI6MjA5MjQwMTkzMH0.-gmIrIiWakuHKOiuDnlW9ZQOJWRntDHUTkzXiU79Hao";
 
 function setSupabaseConfig(url, key) {
-    SUPABASE_URL = url;
-    SUPABASE_KEY = key;
+    if (url && url !== "https://YOUR_PROJECT_ID.supabase.co") {
+        SUPABASE_URL = url;
+    }
+    if (key && key !== "YOUR_ANON_KEY_HERE") {
+        SUPABASE_KEY = key;
+    }
+}
+
+function debugConfig() {
+    console.log("=== SUPABASE CONFIG DEBUG ===");
+    console.log("URL:", SUPABASE_URL);
+    console.log("KEY:", SUPABASE_KEY ? SUPABASE_KEY.substring(0, 20) + "..." : "EMPTY");
+    console.log("URL Valid:", SUPABASE_URL.indexOf("supabase.co") > -1);
+    console.log("KEY Valid:", SUPABASE_KEY.length > 50);
+    console.log("=============================");
 }
 
 function checkAuth() {
@@ -39,17 +52,28 @@ function checkAuth() {
             sidebar.classList.toggle("active");
         });
     }
-
     if (sidebarClose && sidebar) {
         sidebarClose.addEventListener("click", function() {
             sidebar.classList.remove("active");
         });
     }
+
+    debugConfig();
 }
 
 function adminQuery(table, options) {
     if (!options) {
         options = {};
+    }
+
+    if (!SUPABASE_URL || SUPABASE_URL === "https://YOUR_PROJECT.supabase.co") {
+        console.error("SUPABASE_URL not set!");
+        return Promise.resolve({ data: [], count: 0 });
+    }
+
+    if (!SUPABASE_KEY || SUPABASE_KEY === "YOUR_ANON_KEY") {
+        console.error("SUPABASE_KEY not set!");
+        return Promise.resolve({ data: [], count: 0 });
     }
 
     var params = [];
@@ -80,38 +104,69 @@ function adminQuery(table, options) {
 
     var url = SUPABASE_URL + "/rest/v1/" + table + "?" + params.join("&");
 
-    var fetchOptions = {
-        method: "GET",
-        headers: {
-            "apikey": SUPABASE_KEY,
-            "Authorization": "Bearer " + SUPABASE_KEY,
-            "Content-Type": "application/json",
-            "Prefer": options.count ? "count=exact" : ""
-        }
+    console.log("Fetching:", url);
+
+    var headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + SUPABASE_KEY,
+        "Content-Type": "application/json"
     };
 
-    return fetch(url, fetchOptions).then(function(res) {
+    if (options.count) {
+        headers["Prefer"] = "count=exact";
+    }
+
+    return fetch(url, {
+        method: "GET",
+        headers: headers
+    })
+    .then(function(res) {
+        console.log("Response status:", res.status);
+        if (!res.ok) {
+            console.error("HTTP Error:", res.status, res.statusText);
+            return res.text().then(function(text) {
+                console.error("Error body:", text);
+                return { data: [], count: 0 };
+            });
+        }
+
         var count = null;
         if (options.count) {
             var cr = res.headers.get("content-range");
+            console.log("Content-Range:", cr);
             if (cr) {
                 var parts = cr.split("/");
-                if (parts.length > 1) {
+                if (parts.length > 1 && parts[1] !== "*") {
                     count = parseInt(parts[1]);
                 }
             }
         }
+
         return res.json().then(function(data) {
-            return { data: data, count: count };
+            console.log("Data received:", data ? data.length : 0, "records");
+            return { data: data || [], count: count };
         });
-    }).catch(function(err) {
-        console.error("adminQuery error:", err);
+    })
+    .catch(function(err) {
+        console.error("Fetch failed - Check:", err.message);
+        console.error("1. Is Supabase URL correct?");
+        console.error("2. Is Anon Key correct?");
+        console.error("3. Is RLS policy set correctly?");
+        console.error("URL was:", url);
         return { data: [], count: 0 };
     });
 }
 
 function adminInsert(table, body) {
+    if (!SUPABASE_URL || !SUPABASE_KEY) {
+        showToast("Supabase not configured!", "error");
+        return Promise.resolve(false);
+    }
+
     var url = SUPABASE_URL + "/rest/v1/" + table;
+    console.log("Inserting to:", url);
+    console.log("Body:", body);
+
     return fetch(url, {
         method: "POST",
         headers: {
@@ -121,16 +176,31 @@ function adminInsert(table, body) {
             "Prefer": "return=minimal"
         },
         body: JSON.stringify(body)
-    }).then(function(res) {
-        return res.ok;
-    }).catch(function(err) {
-        console.error("adminInsert error:", err);
+    })
+    .then(function(res) {
+        console.log("Insert status:", res.status);
+        if (!res.ok) {
+            return res.text().then(function(t) {
+                console.error("Insert error:", t);
+                return false;
+            });
+        }
+        return true;
+    })
+    .catch(function(err) {
+        console.error("Insert failed:", err.message);
         return false;
     });
 }
 
 function adminUpdate(table, id, body) {
+    if (!SUPABASE_URL || !SUPABASE_KEY) {
+        return Promise.resolve(false);
+    }
+
     var url = SUPABASE_URL + "/rest/v1/" + table + "?id=eq." + id;
+    console.log("Updating:", url);
+
     return fetch(url, {
         method: "PATCH",
         headers: {
@@ -140,26 +210,36 @@ function adminUpdate(table, id, body) {
             "Prefer": "return=minimal"
         },
         body: JSON.stringify(body)
-    }).then(function(res) {
+    })
+    .then(function(res) {
+        console.log("Update status:", res.status);
         return res.ok;
-    }).catch(function(err) {
-        console.error("adminUpdate error:", err);
+    })
+    .catch(function(err) {
+        console.error("Update failed:", err.message);
         return false;
     });
 }
 
 function adminDelete(table, id) {
+    if (!SUPABASE_URL || !SUPABASE_KEY) {
+        return Promise.resolve(false);
+    }
+
     var url = SUPABASE_URL + "/rest/v1/" + table + "?id=eq." + id;
+
     return fetch(url, {
         method: "DELETE",
         headers: {
             "apikey": SUPABASE_KEY,
             "Authorization": "Bearer " + SUPABASE_KEY
         }
-    }).then(function(res) {
+    })
+    .then(function(res) {
         return res.ok;
-    }).catch(function(err) {
-        console.error("adminDelete error:", err);
+    })
+    .catch(function(err) {
+        console.error("Delete failed:", err.message);
         return false;
     });
 }
@@ -171,6 +251,7 @@ function showToast(message, type) {
 
     var container = document.getElementById("toastContainer");
     if (!container) {
+        alert(message);
         return;
     }
 
@@ -189,11 +270,9 @@ function showToast(message, type) {
 
     var closeBtn = document.createElement("button");
     closeBtn.className = "toast-close";
-
     var closeIcon = document.createElement("i");
     closeIcon.className = "fas fa-times";
     closeBtn.appendChild(closeIcon);
-
     closeBtn.addEventListener("click", function() {
         if (toast.parentElement) {
             toast.remove();
@@ -226,15 +305,13 @@ function renderAdminPagination(containerId, currentPage, totalPages, callback) {
     var html = "";
 
     if (currentPage === 1) {
-        html += "<button class=\"page-btn disabled\" data-page=\"0\">";
+        html += "<button class=\"page-btn disabled\"><i class=\"fas fa-chevron-left\"></i></button>";
     } else {
-        html += "<button class=\"page-btn\" data-page=\"" + (currentPage - 1) + "\">";
+        html += "<button class=\"page-btn\" data-page=\"" + (currentPage - 1) + "\"><i class=\"fas fa-chevron-left\"></i></button>";
     }
-    html += "<i class=\"fas fa-chevron-left\"></i></button>";
 
     var startP = currentPage - 2;
     if (startP < 1) { startP = 1; }
-
     var endP = currentPage + 2;
     if (endP > totalPages) { endP = totalPages; }
 
@@ -247,7 +324,7 @@ function renderAdminPagination(containerId, currentPage, totalPages, callback) {
 
     for (var i = startP; i <= endP; i++) {
         if (i === currentPage) {
-            html += "<button class=\"page-btn active\" data-page=\"" + i + "\">" + i + "</button>";
+            html += "<button class=\"page-btn active\">" + i + "</button>";
         } else {
             html += "<button class=\"page-btn\" data-page=\"" + i + "\">" + i + "</button>";
         }
@@ -261,24 +338,21 @@ function renderAdminPagination(containerId, currentPage, totalPages, callback) {
     }
 
     if (currentPage === totalPages) {
-        html += "<button class=\"page-btn disabled\" data-page=\"0\">";
+        html += "<button class=\"page-btn disabled\"><i class=\"fas fa-chevron-right\"></i></button>";
     } else {
-        html += "<button class=\"page-btn\" data-page=\"" + (currentPage + 1) + "\">";
+        html += "<button class=\"page-btn\" data-page=\"" + (currentPage + 1) + "\"><i class=\"fas fa-chevron-right\"></i></button>";
     }
-    html += "<i class=\"fas fa-chevron-right\"></i></button>";
 
     container.innerHTML = html;
 
-    var btns = container.querySelectorAll(".page-btn");
+    var btns = container.querySelectorAll(".page-btn[data-page]");
     for (var j = 0; j < btns.length; j++) {
-        if (!btns[j].classList.contains("disabled") && !btns[j].classList.contains("active")) {
-            btns[j].addEventListener("click", function() {
-                var pg = parseInt(this.getAttribute("data-page"));
-                if (pg >= 1 && pg <= totalPages) {
-                    callback(pg);
-                }
-            });
-        }
+        btns[j].addEventListener("click", function() {
+            var pg = parseInt(this.getAttribute("data-page"));
+            if (pg >= 1 && pg <= totalPages) {
+                callback(pg);
+            }
+        });
     }
 }
 
@@ -287,18 +361,10 @@ function timeAgo(dateStr) {
     var date = new Date(dateStr);
     var seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-    if (seconds < 60) {
-        return "Just now";
-    }
-    if (seconds < 3600) {
-        return Math.floor(seconds / 60) + "m ago";
-    }
-    if (seconds < 86400) {
-        return Math.floor(seconds / 3600) + "h ago";
-    }
-    if (seconds < 604800) {
-        return Math.floor(seconds / 86400) + "d ago";
-    }
+    if (seconds < 60) { return "Just now"; }
+    if (seconds < 3600) { return Math.floor(seconds / 60) + "m ago"; }
+    if (seconds < 86400) { return Math.floor(seconds / 3600) + "h ago"; }
+    if (seconds < 604800) { return Math.floor(seconds / 86400) + "d ago"; }
 
     return date.toLocaleDateString("en-IN", {
         day: "numeric",
