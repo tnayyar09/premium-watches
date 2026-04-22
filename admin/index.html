@@ -1,95 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - LUXE WATCHES</title>
-    <link rel="stylesheet" href="css/admin.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-</head>
-<body class="login-body">
-
-<div class="login-container">
-    <div class="login-left">
-        <div class="login-brand">
-            <i class="fas fa-clock"></i>
-            <h1>LUXE <span>WATCHES</span></h1>
-            <p>Admin Control Panel</p>
-        </div>
-        <div class="login-features">
-            <div class="login-feature">
-                <i class="fas fa-box"></i><span>Manage Products</span>
-            </div>
-            <div class="login-feature">
-                <i class="fas fa-images"></i><span>Manage Banners</span>
-            </div>
-            <div class="login-feature">
-                <i class="fas fa-envelope"></i><span>View Messages</span>
-            </div>
-            <div class="login-feature">
-                <i class="fas fa-users-cog"></i><span>User Management</span>
-            </div>
-        </div>
-    </div>
-    <div class="login-right">
-        <div class="login-form-container">
-            <h2>Welcome Back</h2>
-            <p class="login-subtitle">Sign in to your admin account</p>
-
-            <form id="loginForm">
-                <div class="form-group">
-                    <label><i class="fas fa-user"></i> Username</label>
-                    <input type="text" id="loginUsername" placeholder="Enter username" required>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-lock"></i> Password</label>
-                    <div class="password-wrap">
-                        <input type="password" id="loginPassword" placeholder="Enter password" required>
-                        <button type="button" class="toggle-pass" id="togglePass">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-login" id="loginBtn">
-                    <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Sign In</span>
-                    <span class="btn-loading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Signing in...</span>
-                </button>
-
-                <div class="login-error" id="loginError" style="display:none;">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span id="loginErrorText">Invalid credentials</span>
-                </div>
-
-                <div class="login-success" id="loginSuccess" style="display:none;">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Login successful! Redirecting...</span>
-                </div>
-            </form>
-
-            <div class="login-links">
-                <a href="signup.html" class="auth-link">
-                    <i class="fas fa-user-plus"></i> Create New Account
-                </a>
-                <a href="forgot-password.html" class="auth-link">
-                    <i class="fas fa-key"></i> Forgot Password?
-                </a>
-            </div>
-
-            <div class="login-footer">
-                <a href="../index.html"><i class="fas fa-arrow-left"></i> Back to Website</a>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script src="js/admin.js"></script>
 <script src="js/auth.js"></script>
 <script>
     setSupabaseConfig(
-        "https://YOUR_PROJECT.supabase.co",
-        "YOUR_ANON_KEY"
+        "https://fxpxsmnakwqczgrhiwkl.supabase.co",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4cHhzbW5ha3dxY3pncmhpd2tsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MjU5MzAsImV4cCI6MjA5MjQwMTkzMH0.-gmIrIiWakuHKOiuDnlW9ZQOJWRntDHUTkzXiU79Hao"
     );
 
     if (sessionStorage.getItem("adminLoggedIn") === "true") {
@@ -122,23 +36,37 @@
         btnText.style.display = "none";
         btnLoading.style.display = "inline-flex";
         errorEl.style.display = "none";
-        successEl.style.display = "none";
+        if (successEl) { successEl.style.display = "none"; }
 
+        // STEP 1: Try database login
         loginUser(username, password).then(function(result) {
             if (result.success) {
-                successEl.style.display = "flex";
+                if (successEl) { successEl.style.display = "flex"; }
                 setTimeout(function() {
                     window.location.href = "dashboard.html";
-                }, 1000);
+                }, 800);
             } else {
-                document.getElementById("loginErrorText").textContent = result.error;
+                // STEP 2: Agar database fail ho toh hash debug karo
+                var generatedHash = simpleHash(password);
+                console.log("=== LOGIN DEBUG ===");
+                console.log("Username:", username);
+                console.log("Generated Hash:", generatedHash);
+                console.log("Trying to match in database...");
+                console.log("Run this SQL in Supabase:");
+                console.log("SELECT * FROM admin_users WHERE username = '" + username + "';");
+                console.log("==================");
+
+                document.getElementById("loginErrorText").textContent = result.error + " (Check console for debug info)";
                 errorEl.style.display = "flex";
                 btnText.style.display = "inline-flex";
                 btnLoading.style.display = "none";
             }
+        }).catch(function(err) {
+            console.error("Login error:", err);
+            document.getElementById("loginErrorText").textContent = "Connection error!";
+            errorEl.style.display = "flex";
+            btnText.style.display = "inline-flex";
+            btnLoading.style.display = "none";
         });
     });
 </script>
-
-</body>
-</html>
