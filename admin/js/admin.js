@@ -66,12 +66,12 @@ function adminQuery(table, options) {
         options = {};
     }
 
-    if (!SUPABASE_URL || SUPABASE_URL === "https://YOUR_PROJECT.supabase.co") {
+    if (!SUPABASE_URL || SUPABASE_URL === "https://fxpxsmnakwqczgrhiwkl.supabase.co") {
         console.error("SUPABASE_URL not set!");
         return Promise.resolve({ data: [], count: 0 });
     }
 
-    if (!SUPABASE_KEY || SUPABASE_KEY === "YOUR_ANON_KEY") {
+    if (!SUPABASE_KEY || SUPABASE_KEY === "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4cHhzbW5ha3dxY3pncmhpd2tsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MjU5MzAsImV4cCI6MjA5MjQwMTkzMH0.-gmIrIiWakuHKOiuDnlW9ZQOJWRntDHUTkzXiU79Hao") {
         console.error("SUPABASE_KEY not set!");
         return Promise.resolve({ data: [], count: 0 });
     }
