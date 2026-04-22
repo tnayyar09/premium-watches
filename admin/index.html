@@ -32,6 +32,7 @@
             </div>
         </div>
     </div>
+
     <div class="login-right">
         <div class="login-form-container">
             <h2>Welcome Back</h2>
@@ -46,15 +47,19 @@
                     <label><i class="fas fa-lock"></i> Password</label>
                     <div class="password-wrap">
                         <input type="password" id="loginPassword" placeholder="Enter password" required>
-                        <button type="button" class="toggle-pass" id="togglePass">
+                        <button type="button" id="togglePass">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
                 </div>
 
-                <button type="submit" class="btn-login" id="loginBtn">
-                    <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Sign In</span>
-                    <span class="btn-loading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Signing in...</span>
+                <button type="submit" id="loginBtn" class="btn-login">
+                    <span class="btn-text">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </span>
+                    <span class="btn-loading" style="display:none;">
+                        <i class="fas fa-spinner fa-spin"></i> Signing in...
+                    </span>
                 </button>
 
                 <div class="login-error" id="loginError" style="display:none;">
@@ -78,7 +83,9 @@
             </div>
 
             <div class="login-footer">
-                <a href="../index.html"><i class="fas fa-arrow-left"></i> Back to Website</a>
+                <a href="../index.html">
+                    <i class="fas fa-arrow-left"></i> Back to Website
+                </a>
             </div>
         </div>
     </div>
@@ -87,56 +94,87 @@
 <script src="js/admin.js"></script>
 <script src="js/auth.js"></script>
 <script>
-    setSupabaseConfig(
-        "https://YOUR_PROJECT.supabase.co",
-        "YOUR_ANON_KEY"
-    );
+    document.addEventListener("DOMContentLoaded", function() {
 
-    if (sessionStorage.getItem("adminLoggedIn") === "true") {
-        window.location.href = "dashboard.html";
-    }
-
-    document.getElementById("togglePass").addEventListener("click", function() {
-        var inp = document.getElementById("loginPassword");
-        var ico = this.querySelector("i");
-        if (inp.type === "password") {
-            inp.type = "text";
-            ico.className = "fas fa-eye-slash";
-        } else {
-            inp.type = "password";
-            ico.className = "fas fa-eye";
+        // Already logged in check
+        if (sessionStorage.getItem("adminLoggedIn") === "true") {
+            window.location.href = "dashboard.html";
+            return;
         }
-    });
 
-    document.getElementById("loginForm").addEventListener("submit", function(e) {
-        e.preventDefault();
+        // Toggle password visibility
+        var toggleBtn = document.getElementById("togglePass");
+        if (toggleBtn) {
+            toggleBtn.addEventListener("click", function() {
+                var inp = document.getElementById("loginPassword");
+                var ico = this.querySelector("i");
+                if (inp.type === "password") {
+                    inp.type = "text";
+                    ico.className = "fas fa-eye-slash";
+                } else {
+                    inp.type = "password";
+                    ico.className = "fas fa-eye";
+                }
+            });
+        }
 
-        var username = document.getElementById("loginUsername").value.trim();
-        var password = document.getElementById("loginPassword").value;
-        var errorEl = document.getElementById("loginError");
-        var successEl = document.getElementById("loginSuccess");
-        var btn = document.getElementById("loginBtn");
-        var btnText = btn.querySelector(".btn-text");
-        var btnLoading = btn.querySelector(".btn-loading");
+        // Login form submit
+        var loginForm = document.getElementById("loginForm");
+        if (loginForm) {
+            loginForm.addEventListener("submit", function(e) {
+                e.preventDefault();
 
-        btnText.style.display = "none";
-        btnLoading.style.display = "inline-flex";
-        errorEl.style.display = "none";
-        successEl.style.display = "none";
+                var username = document.getElementById("loginUsername").value.trim();
+                var password = document.getElementById("loginPassword").value;
 
-        loginUser(username, password).then(function(result) {
-            if (result.success) {
-                successEl.style.display = "flex";
-                setTimeout(function() {
-                    window.location.href = "dashboard.html";
-                }, 1000);
-            } else {
-                document.getElementById("loginErrorText").textContent = result.error;
-                errorEl.style.display = "flex";
-                btnText.style.display = "inline-flex";
-                btnLoading.style.display = "none";
-            }
-        });
+                var errorEl = document.getElementById("loginError");
+                var errorText = document.getElementById("loginErrorText");
+                var successEl = document.getElementById("loginSuccess");
+                var btn = document.getElementById("loginBtn");
+                var btnText = btn.querySelector(".btn-text");
+                var btnLoading = btn.querySelector(".btn-loading");
+
+                // Reset messages
+                errorEl.style.display = "none";
+                successEl.style.display = "none";
+
+                // Validation
+                if (!username || !password) {
+                    errorText.textContent = "Please enter username and password";
+                    errorEl.style.display = "flex";
+                    return;
+                }
+
+                // Show loading
+                btnText.style.display = "none";
+                btnLoading.style.display = "inline-flex";
+                btn.disabled = true;
+
+                // Call login function from auth.js
+                loginUser(username, password).then(function(result) {
+                    if (result.success) {
+                        successEl.style.display = "flex";
+                        setTimeout(function() {
+                            window.location.href = "dashboard.html";
+                        }, 800);
+                    } else {
+                        errorText.textContent = result.error || "Invalid username or password";
+                        errorEl.style.display = "flex";
+                        btnText.style.display = "inline-flex";
+                        btnLoading.style.display = "none";
+                        btn.disabled = false;
+                    }
+                }).catch(function(err) {
+                    console.error("Login error:", err);
+                    errorText.textContent = "Connection error. Check console.";
+                    errorEl.style.display = "flex";
+                    btnText.style.display = "inline-flex";
+                    btnLoading.style.display = "none";
+                    btn.disabled = false;
+                });
+            });
+        }
+
     });
 </script>
 
