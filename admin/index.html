@@ -10,103 +10,121 @@
 </head>
 <body class="login-body">
 
-    <div class="login-container">
-        <div class="login-left">
-            <div class="login-brand">
-                <i class="fas fa-clock"></i>
-                <h1>LUXE <span>WATCHES</span></h1>
-                <p>Admin Control Panel</p>
-            </div>
-            <div class="login-features">
-                <div class="login-feature"><i class="fas fa-box"></i><span>Manage Products</span></div>
-                <div class="login-feature"><i class="fas fa-images"></i><span>Manage Banners</span></div>
-                <div class="login-feature"><i class="fas fa-envelope"></i><span>View Messages</span></div>
-                <div class="login-feature"><i class="fas fa-chart-bar"></i><span>Dashboard Analytics</span></div>
-            </div>
+<div class="login-container">
+    <div class="login-left">
+        <div class="login-brand">
+            <i class="fas fa-clock"></i>
+            <h1>LUXE <span>WATCHES</span></h1>
+            <p>Admin Control Panel</p>
         </div>
-        <div class="login-right">
-            <div class="login-form-container">
-                <h2>Welcome Back</h2>
-                <p class="login-subtitle">Sign in to your admin account</p>
-                
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label><i class="fas fa-user"></i> Username</label>
-                        <input type="text" id="loginUsername" placeholder="Enter username" required autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-lock"></i> Password</label>
-                        <div class="password-wrap">
-                            <input type="password" id="loginPassword" placeholder="Enter password" required>
-                            <button type="button" class="toggle-pass" id="togglePass">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="form-check">
-                        <label><input type="checkbox" id="rememberMe"> Remember me</label>
-                    </div>
-                    <button type="submit" class="btn-login" id="loginBtn">
-                        <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Sign In</span>
-                        <span class="btn-loading" style="display:none"><i class="fas fa-spinner fa-spin"></i> Signing in...</span>
-                    </button>
-                    <div class="login-error" id="loginError" style="display:none">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>Invalid username or password</span>
-                    </div>
-                </form>
-                
-                <div class="login-footer">
-                    <p>Default: <strong>admin</strong> / <strong>luxe@2025</strong></p>
-                    <a href="../index.html"><i class="fas fa-arrow-left"></i> Back to Website</a>
-                </div>
+        <div class="login-features">
+            <div class="login-feature">
+                <i class="fas fa-box"></i><span>Manage Products</span>
+            </div>
+            <div class="login-feature">
+                <i class="fas fa-images"></i><span>Manage Banners</span>
+            </div>
+            <div class="login-feature">
+                <i class="fas fa-envelope"></i><span>View Messages</span>
+            </div>
+            <div class="login-feature">
+                <i class="fas fa-chart-bar"></i><span>Dashboard Analytics</span>
             </div>
         </div>
     </div>
+    <div class="login-right">
+        <div class="login-form-container">
+            <h2>Welcome Back</h2>
+            <p class="login-subtitle">Sign in to your admin account</p>
 
-    <script src="js/admin.js"></script>
-    <script>
-        // Check if already logged in
-        if (sessionStorage.getItem('adminLoggedIn') === 'true') {
-            window.location.href = 'dashboard.html';
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-user"></i> Username
+                    </label>
+                    <input type="text" id="loginUsername" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <div class="password-wrap">
+                        <input type="password" id="loginPassword" placeholder="Enter password" required>
+                        <button type="button" class="toggle-pass" id="togglePass">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login" id="loginBtn">
+                    <span class="btn-text">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </span>
+                    <span class="btn-loading" style="display:none;">
+                        <i class="fas fa-spinner fa-spin"></i> Signing in...
+                    </span>
+                </button>
+
+                <div class="login-error" id="loginError" style="display:none;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Invalid username or password</span>
+                </div>
+            </form>
+
+            <div class="login-footer">
+                <p>Default: <strong>admin</strong> / <strong>luxe@2025</strong></p>
+                <a href="../index.html">
+                    <i class="fas fa-arrow-left"></i> Back to Website
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    if (sessionStorage.getItem("adminLoggedIn") === "true") {
+        window.location.href = "dashboard.html";
+    }
+
+    document.getElementById("togglePass").addEventListener("click", function() {
+        var passInput = document.getElementById("loginPassword");
+        var icon = this.querySelector("i");
+        if (passInput.type === "password") {
+            passInput.type = "text";
+            icon.className = "fas fa-eye-slash";
+        } else {
+            passInput.type = "password";
+            icon.className = "fas fa-eye";
         }
+    });
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            const errorEl = document.getElementById('loginError');
-            const btn = document.getElementById('loginBtn');
-            
-            btn.querySelector('.btn-text').style.display = 'none';
-            btn.querySelector('.btn-loading').style.display = 'inline-flex';
-            errorEl.style.display = 'none';
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+        e.preventDefault();
 
-            setTimeout(() => {
-                // Simple auth - you can change credentials here
-                if (username === 'admin' && password === 'luxe@2025') {
-                    sessionStorage.setItem('adminLoggedIn', 'true');
-                    sessionStorage.setItem('adminUser', username);
-                    window.location.href = 'dashboard.html';
-                } else {
-                    errorEl.style.display = 'flex';
-                    btn.querySelector('.btn-text').style.display = 'inline-flex';
-                    btn.querySelector('.btn-loading').style.display = 'none';
-                }
-            }, 1000);
-        });
+        var username = document.getElementById("loginUsername").value.trim();
+        var password = document.getElementById("loginPassword").value;
+        var errorEl = document.getElementById("loginError");
+        var btn = document.getElementById("loginBtn");
+        var btnText = btn.querySelector(".btn-text");
+        var btnLoading = btn.querySelector(".btn-loading");
 
-        document.getElementById('togglePass').addEventListener('click', function() {
-            const passInput = document.getElementById('loginPassword');
-            const icon = this.querySelector('i');
-            if (passInput.type === 'password') {
-                passInput.type = 'text';
-                icon.classList.replace('fa-eye', 'fa-eye-slash');
+        btnText.style.display = "none";
+        btnLoading.style.display = "inline-flex";
+        errorEl.style.display = "none";
+
+        setTimeout(function() {
+            if (username === "admin" && password === "luxe@2025") {
+                sessionStorage.setItem("adminLoggedIn", "true");
+                sessionStorage.setItem("adminUser", username);
+                window.location.href = "dashboard.html";
             } else {
-                passInput.type = 'password';
-                icon.classList.replace('fa-eye-slash', 'fa-eye');
+                errorEl.style.display = "flex";
+                btnText.style.display = "inline-flex";
+                btnLoading.style.display = "none";
             }
-        });
-    </script>
+        }, 1000);
+    });
+</script>
+
 </body>
 </html>

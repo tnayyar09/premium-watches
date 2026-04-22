@@ -10,260 +10,243 @@
 </head>
 <body>
 
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-logo"><i class="fas fa-clock"></i><div><span class="logo-main">LUXE</span><span class="logo-sub">ADMIN</span></div></div>
-            <button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button>
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo">
+            <i class="fas fa-clock"></i>
+            <div>
+                <span class="logo-main">LUXE</span>
+                <span class="logo-sub">ADMIN</span>
+            </div>
         </div>
-        <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
-            <a href="products.html" class="nav-item"><i class="fas fa-box"></i><span>Products</span></a>
-            <a href="banners.html" class="nav-item"><i class="fas fa-images"></i><span>Banners</span></a>
-            <a href="messages.html" class="nav-item active"><i class="fas fa-envelope"></i><span>Messages</span></a>
-            <div class="nav-divider"></div>
-            <a href="../index.html" class="nav-item"><i class="fas fa-globe"></i><span>View Website</span></a>
-            <a href="#" class="nav-item logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
-        </nav>
-    </aside>
+        <button class="sidebar-close" id="sidebarClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">
+            <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
+        </a>
+        <a href="products.html" class="nav-item">
+            <i class="fas fa-box"></i><span>Products</span>
+        </a>
+        <a href="banners.html" class="nav-item">
+            <i class="fas fa-images"></i><span>Banners</span>
+        </a>
+        <a href="messages.html" class="nav-item active">
+            <i class="fas fa-envelope"></i><span>Messages</span>
+        </a>
+        <div class="nav-divider"></div>
+        <a href="../index.html" target="_blank" class="nav-item">
+            <i class="fas fa-globe"></i><span>View Website</span>
+        </a>
+        <a href="#" class="nav-item" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+        </a>
+    </nav>
+</aside>
 
-    <main class="main-content">
-        <header class="topbar">
-            <div class="topbar-left">
-                <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
-                <h2>Contact Messages</h2>
-            </div>
-            <div class="topbar-right">
-                <button class="btn-add btn-danger" id="deleteAllBtn"><i class="fas fa-trash"></i> Clear All</button>
-            </div>
-        </header>
-
-        <div class="content-area">
-            <div class="toolbar">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchMessages" placeholder="Search by name or email...">
-                </div>
-                <div class="toolbar-info" id="messagesCount">Loading...</div>
-            </div>
-
-            <!-- Messages List -->
-            <div class="messages-list" id="messagesList">
-                <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading messages...</div>
-            </div>
-
-            <div class="table-pagination" id="messagesPagination"></div>
+<main class="main-content">
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h2>Contact Messages</h2>
         </div>
-    </main>
+    </header>
 
-    <!-- View Message Modal -->
-    <div class="modal-overlay" id="viewMessageModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3><i class="fas fa-envelope-open"></i> Message Details</h3>
-                <button class="modal-close" id="closeViewMessage"><i class="fas fa-times"></i></button>
+    <div class="content-area">
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchMessages" placeholder="Search by name or email...">
             </div>
-            <div class="modal-body" id="messageDetails">
-                <!-- Message content here -->
+            <div class="toolbar-info" id="messagesCount">Loading...</div>
+        </div>
+
+        <div class="messages-list" id="messagesList">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i> Loading messages...
+            </div>
+        </div>
+
+        <div class="table-pagination" id="messagesPagination"></div>
+    </div>
+</main>
+
+<div class="modal-overlay" id="viewMessageModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3><i class="fas fa-envelope-open"></i> Message Details</h3>
+            <button class="modal-close" id="closeViewMessage">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="messageDetails"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="deleteMsgModal">
+    <div class="modal modal-sm">
+        <div class="modal-header modal-header-danger">
+            <h3><i class="fas fa-exclamation-triangle"></i> Delete Message</h3>
+        </div>
+        <div class="modal-body text-center">
+            <p style="margin-bottom:20px;">Delete this message permanently?</p>
+            <div class="form-actions" style="justify-content:center;">
+                <button class="btn-cancel" id="cancelMsgDelete">Cancel</button>
+                <button class="btn-delete" id="confirmMsgDelete">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Delete All Modal -->
-    <div class="modal-overlay" id="deleteAllModal">
-        <div class="modal modal-sm">
-            <div class="modal-header modal-header-danger">
-                <h3><i class="fas fa-exclamation-triangle"></i> Delete All Messages</h3>
-            </div>
-            <div class="modal-body text-center">
-                <p>Are you sure? This will permanently delete ALL contact messages.</p>
-                <div class="form-actions">
-                    <button class="btn-cancel" id="cancelDeleteAll">Cancel</button>
-                    <button class="btn-delete" id="confirmDeleteAll"><i class="fas fa-trash"></i> Delete All</button>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="toast-container" id="toastContainer"></div>
 
-    <!-- Single Delete Modal -->
-    <div class="modal-overlay" id="deleteMsgModal">
-        <div class="modal modal-sm">
-            <div class="modal-header modal-header-danger">
-                <h3><i class="fas fa-exclamation-triangle"></i> Delete Message</h3>
-            </div>
-            <div class="modal-body text-center">
-                <p>Delete this message permanently?</p>
-                <div class="form-actions">
-                    <button class="btn-cancel" id="cancelMsgDelete">Cancel</button>
-                    <button class="btn-delete" id="confirmMsgDelete"><i class="fas fa-trash"></i> Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
+<script src="js/admin.js"></script>
+<script>
+    setSupabaseConfig(
+        "https://YOUR_PROJECT_ID.supabase.co",
+        "YOUR_ANON_KEY_HERE"
+    );
 
-    <div class="toast-container" id="toastContainer"></div>
+    checkAuth();
 
-    <script src="js/admin.js"></script>
-    <script>
-        checkAuth();
-        let msgPage = 1;
-        const MSG_PER_PAGE = 10;
-        let deleteMsgId = null;
+    var msgPage = 1;
+    var MSG_PER_PAGE = 10;
+    var deleteMsgId = null;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadMessages();
-            setupMsgListeners();
-        });
+    document.getElementById("closeViewMessage").addEventListener("click", function() {
+        document.getElementById("viewMessageModal").classList.remove("active");
+    });
+    document.getElementById("viewMessageModal").addEventListener("click", function(e) {
+        if (e.target === this) { this.classList.remove("active"); }
+    });
 
-        function setupMsgListeners() {
-            let searchTimer;
-            document.getElementById('searchMessages').addEventListener('input', () => {
-                clearTimeout(searchTimer);
-                searchTimer = setTimeout(() => loadMessages(1), 400);
-            });
+    document.getElementById("cancelMsgDelete").addEventListener("click", function() {
+        document.getElementById("deleteMsgModal").classList.remove("active");
+    });
 
-            document.getElementById('closeViewMessage').addEventListener('click', () => {
-                document.getElementById('viewMessageModal').classList.remove('active');
-            });
-            document.getElementById('viewMessageModal').addEventListener('click', (e) => {
-                if (e.target.id === 'viewMessageModal') e.target.classList.remove('active');
-            });
-
-            document.getElementById('deleteAllBtn').addEventListener('click', () => {
-                document.getElementById('deleteAllModal').classList.add('active');
-            });
-            document.getElementById('cancelDeleteAll').addEventListener('click', () => {
-                document.getElementById('deleteAllModal').classList.remove('active');
-            });
-            document.getElementById('confirmDeleteAll').addEventListener('click', async () => {
-                try {
-                    // Delete all by matching all ids (id > 0)
-                    const url = `${SUPABASE_URL}/rest/v1/contact_messages?id=gt.0`;
-                    const res = await fetch(url, {
-                        method: 'DELETE',
-                        headers: {
-                            'apikey': SUPABASE_KEY,
-                            'Authorization': `Bearer ${SUPABASE_KEY}`
-                        }
-                    });
-                    if (res.ok) {
-                        showToast('All messages deleted!', 'success');
-                        loadMessages(1);
-                    }
-                } catch(e) { showToast('Error deleting', 'error'); }
-                document.getElementById('deleteAllModal').classList.remove('active');
-            });
-
-            document.getElementById('cancelMsgDelete').addEventListener('click', () => {
-                document.getElementById('deleteMsgModal').classList.remove('active');
-            });
-            document.getElementById('confirmMsgDelete').addEventListener('click', async () => {
-                if (!deleteMsgId) return;
-                try {
-                    const success = await adminDelete('contact_messages', deleteMsgId);
-                    if (success) { showToast('Message deleted!', 'success'); loadMessages(msgPage); }
-                } catch(e) { showToast('Error', 'error'); }
-                document.getElementById('deleteMsgModal').classList.remove('active');
-                deleteMsgId = null;
-            });
-        }
-
-        async function loadMessages(page = 1) {
-            const container = document.getElementById('messagesList');
-            container.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
-            msgPage = page;
-
-            try {
-                const filters = [];
-                const search = document.getElementById('searchMessages').value.trim();
-                if (search) filters.push(`or=(name.ilike.*${encodeURIComponent(search)}*,email.ilike.*${encodeURIComponent(search)}*)`);
-
-                const offset = (page - 1) * MSG_PER_PAGE;
-                const { data, count } = await adminQuery('contact_messages', {
-                    filters,
-                    order: 'created_at.desc',
-                    limit: MSG_PER_PAGE,
-                    offset,
-                    count: true
-                });
-
-                document.getElementById('messagesCount').textContent = `${count || 0} total messages`;
-
-                if (!data || data.length === 0) {
-                    container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><h3>No Messages</h3><p>No contact messages received yet.</p></div>';
-                    document.getElementById('messagesPagination').innerHTML = '';
-                    return;
-                }
-
-                container.innerHTML = data.map(m => `
-                    <div class="message-card">
-                        <div class="message-avatar">${m.name.charAt(0).toUpperCase()}</div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <h4>${m.name}</h4>
-                                <span class="message-time">${timeAgo(m.created_at)}</span>
-                            </div>
-                            <p class="message-email"><i class="fas fa-envelope"></i> ${m.email} ${m.phone ? `<span class="message-phone"><i class="fas fa-phone"></i> ${m.phone}</span>` : ''}</p>
-                            <p class="message-text">${m.message.substring(0, 120)}${m.message.length > 120 ? '...' : ''}</p>
-                        </div>
-                        <div class="message-actions">
-                            <button class="action-btn edit-btn" onclick="viewMessage(${m.id})" title="View"><i class="fas fa-eye"></i></button>
-                            <a href="mailto:${m.email}" class="action-btn success-btn" title="Reply"><i class="fas fa-reply"></i></a>
-                            <a href="https://wa.me/${(m.phone || '').replace(/[^0-9]/g, '')}" target="_blank" class="action-btn wa-btn" title="WhatsApp" ${m.phone ? '' : 'style="display:none"'}><i class="fab fa-whatsapp"></i></a>
-                            <button class="action-btn delete-btn" onclick="deleteMsg(${m.id})" title="Delete"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                `).join('');
-
-                const totalPages = Math.ceil(count / MSG_PER_PAGE);
-                renderAdminPagination('messagesPagination', page, totalPages, loadMessages);
-
-            } catch(e) {
-                console.error(e);
-                container.innerHTML = '<div class="empty-state"><h3>Error loading messages</h3></div>';
+    document.getElementById("confirmMsgDelete").addEventListener("click", function() {
+        if (!deleteMsgId) { return; }
+        adminDelete("contact_messages", deleteMsgId).then(function(ok) {
+            if (ok) {
+                showToast("Message deleted!", "success");
+                loadMessages(msgPage);
+            } else {
+                showToast("Delete failed!", "error");
             }
-        }
+            document.getElementById("deleteMsgModal").classList.remove("active");
+            deleteMsgId = null;
+        });
+    });
 
-        async function viewMessage(id) {
-            try {
-                const { data } = await adminQuery('contact_messages', { filters: [`id=eq.${id}`] });
-                if (data && data.length) {
-                    const m = data[0];
-                    document.getElementById('messageDetails').innerHTML = `
-                        <div class="message-detail-card">
-                            <div class="msg-detail-row">
-                                <label><i class="fas fa-user"></i> Name</label>
-                                <p>${m.name}</p>
-                            </div>
-                            <div class="msg-detail-row">
-                                <label><i class="fas fa-envelope"></i> Email</label>
-                                <p><a href="mailto:${m.email}">${m.email}</a></p>
-                            </div>
-                            ${m.phone ? `<div class="msg-detail-row"><label><i class="fas fa-phone"></i> Phone</label><p>${m.phone}</p></div>` : ''}
-                            <div class="msg-detail-row">
-                                <label><i class="fas fa-calendar"></i> Date</label>
-                                <p>${new Date(m.created_at).toLocaleString()}</p>
-                            </div>
-                            <div class="msg-detail-row">
-                                <label><i class="fas fa-comment-dots"></i> Message</label>
-                                <div class="msg-full-text">${m.message}</div>
-                            </div>
-                            <div class="msg-detail-actions">
-                                <a href="mailto:${m.email}?subject=Re: Your inquiry at Luxe Watches" class="btn-save">
-                                    <i class="fas fa-reply"></i> Reply via Email
-                                </a>
-                                ${m.phone ? `<a href="https://wa.me/${m.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn-add" style="background:#25D366"><i class="fab fa-whatsapp"></i> Reply on WhatsApp</a>` : ''}
-                            </div>
-                        </div>
-                    `;
-                    document.getElementById('viewMessageModal').classList.add('active');
-                }
-            } catch(e) { showToast('Error loading message', 'error'); }
-        }
+    var searchTimer = null;
+    document.getElementById("searchMessages").addEventListener("input", function() {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(function() { loadMessages(1); }, 400);
+    });
 
-        function deleteMsg(id) {
-            deleteMsgId = id;
-            document.getElementById('deleteMsgModal').classList.add('active');
-        }
-    </script>
+    function viewMessage(id) {
+        adminQuery("contact_messages", { filters: ["id=eq." + id] }).then(function(r) {
+            if (!r.data || r.data.length === 0) { return; }
+            var m = r.data[0];
+            var phoneRow = m.phone
+                ? "<div class=\"msg-detail-row\"><label><i class=\"fas fa-phone\"></i> Phone</label><p>" + m.phone + "</p></div>"
+                : "";
+            var waBtn = m.phone
+                ? "<a href=\"https://wa.me/" + m.phone.replace(/[^0-9]/g, "") + "\" target=\"_blank\" class=\"btn-add\" style=\"background:#25D366;color:white;\"><i class=\"fab fa-whatsapp\"></i> WhatsApp</a>"
+                : "";
+
+            document.getElementById("messageDetails").innerHTML =
+                "<div class=\"message-detail-card\">"
+                + "<div class=\"msg-detail-row\"><label><i class=\"fas fa-user\"></i> Name</label><p>" + m.name + "</p></div>"
+                + "<div class=\"msg-detail-row\"><label><i class=\"fas fa-envelope\"></i> Email</label><p><a href=\"mailto:" + m.email + "\">" + m.email + "</a></p></div>"
+                + phoneRow
+                + "<div class=\"msg-detail-row\"><label><i class=\"fas fa-calendar\"></i> Date</label><p>" + new Date(m.created_at).toLocaleString() + "</p></div>"
+                + "<div class=\"msg-detail-row\"><label><i class=\"fas fa-comment-dots\"></i> Message</label><div class=\"msg-full-text\">" + m.message + "</div></div>"
+                + "<div class=\"msg-detail-actions\">"
+                + "<a href=\"mailto:" + m.email + "\" class=\"btn-save\"><i class=\"fas fa-reply\"></i> Reply via Email</a>"
+                + waBtn
+                + "</div>"
+                + "</div>";
+
+            document.getElementById("viewMessageModal").classList.add("active");
+        });
+    }
+
+    function deleteMsg(id) {
+        deleteMsgId = id;
+        document.getElementById("deleteMsgModal").classList.add("active");
+    }
+
+    function loadMessages(page) {
+        if (!page) { page = 1; }
+        msgPage = page;
+
+        var container = document.getElementById("messagesList");
+        container.innerHTML = "<div class=\"loading-spinner\"><i class=\"fas fa-spinner fa-spin\"></i> Loading...</div>";
+
+        var offset = (page - 1) * MSG_PER_PAGE;
+
+        adminQuery("contact_messages", {
+            order: "created_at.desc",
+            limit: MSG_PER_PAGE,
+            offset: offset,
+            count: true
+        }).then(function(result) {
+            var data = result.data;
+            var count = result.count || 0;
+
+            document.getElementById("messagesCount").textContent = count + " total messages";
+
+            if (!data || data.length === 0) {
+                container.innerHTML = "<div class=\"empty-state\"><i class=\"fas fa-inbox\"></i><h3>No Messages</h3><p>No contact messages yet.</p></div>";
+                document.getElementById("messagesPagination").innerHTML = "";
+                return;
+            }
+
+            var html = "";
+            for (var i = 0; i < data.length; i++) {
+                var m = data[i];
+                var firstChar = m.name ? m.name.charAt(0).toUpperCase() : "?";
+                var preview = m.message ? m.message.substring(0, 100) : "";
+                if (m.message && m.message.length > 100) { preview += "..."; }
+                var phoneHtml = m.phone
+                    ? "<span class=\"message-phone\"><i class=\"fas fa-phone\"></i> " + m.phone + "</span>"
+                    : "";
+
+                html += "<div class=\"message-card\">"
+                    + "<div class=\"message-avatar\">" + firstChar + "</div>"
+                    + "<div class=\"message-content\">"
+                    + "<div class=\"message-header\">"
+                    + "<h4>" + m.name + "</h4>"
+                    + "<span class=\"message-time\">" + timeAgo(m.created_at) + "</span>"
+                    + "</div>"
+                    + "<p class=\"message-email\"><i class=\"fas fa-envelope\"></i> " + m.email + phoneHtml + "</p>"
+                    + "<p class=\"message-text\">" + preview + "</p>"
+                    + "</div>"
+                    + "<div class=\"message-actions\">"
+                    + "<button class=\"action-btn edit-btn\" onclick=\"viewMessage(" + m.id + ")\" title=\"View\"><i class=\"fas fa-eye\"></i></button>"
+                    + "<a href=\"mailto:" + m.email + "\" class=\"action-btn success-btn\" title=\"Reply\"><i class=\"fas fa-reply\"></i></a>"
+                    + "<button class=\"action-btn delete-btn\" onclick=\"deleteMsg(" + m.id + ")\" title=\"Delete\"><i class=\"fas fa-trash\"></i></button>"
+                    + "</div>"
+                    + "</div>";
+            }
+            container.innerHTML = html;
+
+            var totalPages = Math.ceil(count / MSG_PER_PAGE);
+            renderAdminPagination("messagesPagination", page, totalPages, loadMessages);
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        loadMessages(1);
+    });
+</script>
+
 </body>
 </html>
