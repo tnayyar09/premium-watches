@@ -14,86 +14,56 @@
     <div class="sidebar-header">
         <div class="sidebar-logo">
             <i class="fas fa-clock"></i>
-            <div>
-                <span class="logo-main">LUXE</span>
-                <span class="logo-sub">ADMIN</span>
-            </div>
+            <div><span class="logo-main">LUXE</span><span class="logo-sub">ADMIN</span></div>
         </div>
-        <button class="sidebar-close" id="sidebarClose">
-            <i class="fas fa-times"></i>
-        </button>
+        <button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button>
     </div>
     <nav class="sidebar-nav">
-        <a href="dashboard.html" class="nav-item active">
-            <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
-        </a>
-        <a href="products.html" class="nav-item">
-            <i class="fas fa-box"></i><span>Products</span>
-        </a>
-        <a href="banners.html" class="nav-item">
-            <i class="fas fa-images"></i><span>Banners</span>
-        </a>
-        <a href="messages.html" class="nav-item">
-            <i class="fas fa-envelope"></i><span>Messages</span>
-        </a>
+        <a href="dashboard.html" class="nav-item active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+        <a href="products.html" class="nav-item"><i class="fas fa-box"></i><span>Products</span></a>
+        <a href="banners.html" class="nav-item"><i class="fas fa-images"></i><span>Banners</span></a>
+        <a href="messages.html" class="nav-item"><i class="fas fa-envelope"></i><span>Messages</span></a>
         <div class="nav-divider"></div>
-        <a href="../index.html" target="_blank" class="nav-item">
-            <i class="fas fa-globe"></i><span>View Website</span>
-        </a>
-        <a href="#" class="nav-item" id="logoutBtn">
-            <i class="fas fa-sign-out-alt"></i><span>Logout</span>
-        </a>
+        <a href="profile.html" class="nav-item"><i class="fas fa-user"></i><span>Profile</span></a>
+        <a href="change-password.html" class="nav-item"><i class="fas fa-key"></i><span>Change Password</span></a>
+        <a href="manage-users.html" class="nav-item"><i class="fas fa-users-cog"></i><span>Manage Users</span></a>
+        <div class="nav-divider"></div>
+        <a href="../index.html" target="_blank" class="nav-item"><i class="fas fa-globe"></i><span>View Website</span></a>
+        <a href="#" class="nav-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
     </nav>
 </aside>
 
 <main class="main-content">
     <header class="topbar">
         <div class="topbar-left">
-            <button class="menu-toggle" id="menuToggle">
-                <i class="fas fa-bars"></i>
-            </button>
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
             <h2>Dashboard</h2>
         </div>
         <div class="topbar-right">
             <div class="admin-info">
-                <div class="admin-avatar">
-                    <i class="fas fa-user-shield"></i>
-                </div>
+                <div class="admin-avatar"><i class="fas fa-user-shield"></i></div>
                 <span id="adminName">Admin</span>
             </div>
         </div>
     </header>
 
     <div class="content-area">
-
         <div class="stats-grid">
             <div class="stat-card stat-blue">
                 <div class="stat-icon"><i class="fas fa-box"></i></div>
-                <div class="stat-info">
-                    <h3 id="totalProducts">-</h3>
-                    <p>Total Products</p>
-                </div>
+                <div class="stat-info"><h3 id="totalProducts">-</h3><p>Total Products</p></div>
             </div>
             <div class="stat-card stat-gold">
                 <div class="stat-icon"><i class="fas fa-star"></i></div>
-                <div class="stat-info">
-                    <h3 id="featuredProducts">-</h3>
-                    <p>Featured Products</p>
-                </div>
+                <div class="stat-info"><h3 id="featuredProducts">-</h3><p>Featured Products</p></div>
             </div>
             <div class="stat-card stat-green">
                 <div class="stat-icon"><i class="fas fa-images"></i></div>
-                <div class="stat-info">
-                    <h3 id="activeBanners">-</h3>
-                    <p>Active Banners</p>
-                </div>
+                <div class="stat-info"><h3 id="activeBanners">-</h3><p>Active Banners</p></div>
             </div>
             <div class="stat-card stat-purple">
                 <div class="stat-icon"><i class="fas fa-envelope"></i></div>
-                <div class="stat-info">
-                    <h3 id="totalMessages">-</h3>
-                    <p>Messages</p>
-                </div>
+                <div class="stat-info"><h3 id="totalMessages">-</h3><p>Messages</p></div>
             </div>
         </div>
 
@@ -101,27 +71,19 @@
             <div class="dash-card">
                 <div class="dash-card-header">
                     <h3><i class="fas fa-box"></i> Recent Products</h3>
-                    <a href="products.html" class="view-all">
-                        View All <i class="fas fa-arrow-right"></i>
-                    </a>
+                    <a href="products.html" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="dash-card-body" id="recentProducts">
-                    <div class="loading-spinner">
-                        <i class="fas fa-spinner fa-spin"></i>
-                    </div>
+                    <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
                 </div>
             </div>
             <div class="dash-card">
                 <div class="dash-card-header">
                     <h3><i class="fas fa-envelope"></i> Recent Messages</h3>
-                    <a href="messages.html" class="view-all">
-                        View All <i class="fas fa-arrow-right"></i>
-                    </a>
+                    <a href="messages.html" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="dash-card-body" id="recentMessages">
-                    <div class="loading-spinner">
-                        <i class="fas fa-spinner fa-spin"></i>
-                    </div>
+                    <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
                 </div>
             </div>
         </div>
@@ -129,89 +91,61 @@
         <div class="quick-actions">
             <h3>Quick Actions</h3>
             <div class="quick-actions-grid">
-                <a href="products.html" class="quick-action-btn">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Add Product</span>
-                </a>
-                <a href="banners.html" class="quick-action-btn">
-                    <i class="fas fa-image"></i>
-                    <span>Add Banner</span>
-                </a>
-                <a href="messages.html" class="quick-action-btn">
-                    <i class="fas fa-envelope-open"></i>
-                    <span>View Messages</span>
-                </a>
-                <a href="../index.html" target="_blank" class="quick-action-btn">
-                    <i class="fas fa-external-link-alt"></i>
-                    <span>View Website</span>
-                </a>
+                <a href="products.html" class="quick-action-btn"><i class="fas fa-plus-circle"></i><span>Add Product</span></a>
+                <a href="banners.html" class="quick-action-btn"><i class="fas fa-image"></i><span>Add Banner</span></a>
+                <a href="messages.html" class="quick-action-btn"><i class="fas fa-envelope-open"></i><span>View Messages</span></a>
+                <a href="../index.html" target="_blank" class="quick-action-btn"><i class="fas fa-external-link-alt"></i><span>View Website</span></a>
             </div>
         </div>
-
     </div>
 </main>
 
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="js/admin.js"></script>
+<script src="js/auth.js"></script>
 <script>
-    setSupabaseConfig(
-        "https://fxpxsmnakwqczgrhiwkl.supabase.co",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4cHhzbW5ha3dxY3pncmhpd2tsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MjU5MzAsImV4cCI6MjA5MjQwMTkzMH0.-gmIrIiWakuHKOiuDnlW9ZQOJWRntDHUTkzXiU79Hao"
-    );
-
-    checkAuth();
-
-    function animateNumber(id, target) {
-        var el = document.getElementById(id);
-        if (!el) { return; }
-        var t = target || 0;
-        if (t === 0) { el.textContent = "0"; return; }
-        var current = 0;
-        var step = Math.max(1, Math.ceil(t / 40));
-        var timer = setInterval(function() {
-            current += step;
-            if (current >= t) { current = t; clearInterval(timer); }
-            el.textContent = current;
-        }, 40);
-    }
-
     document.addEventListener("DOMContentLoaded", function() {
+        checkAuth();
+
+        function animateNumber(id, target) {
+            var el = document.getElementById(id);
+            if (!el) { return; }
+            var t = target || 0;
+            if (t === 0) { el.textContent = "0"; return; }
+            var current = 0;
+            var step = Math.max(1, Math.ceil(t / 40));
+            var timer = setInterval(function() {
+                current += step;
+                if (current >= t) { current = t; clearInterval(timer); }
+                el.textContent = current;
+            }, 40);
+        }
 
         adminQuery("products", { select: "id", count: true, limit: 0 })
         .then(function(r) { animateNumber("totalProducts", r.count || 0); });
 
-        adminQuery("products", {
-            select: "id", count: true, limit: 0,
-            filters: ["is_featured=eq.true"]
-        }).then(function(r) { animateNumber("featuredProducts", r.count || 0); });
+        adminQuery("products", { select: "id", count: true, limit: 0, filters: ["is_featured=eq.true"] })
+        .then(function(r) { animateNumber("featuredProducts", r.count || 0); });
 
-        adminQuery("banners", {
-            select: "id", count: true, limit: 0,
-            filters: ["is_active=eq.true"]
-        }).then(function(r) { animateNumber("activeBanners", r.count || 0); });
+        adminQuery("banners", { select: "id", count: true, limit: 0, filters: ["is_active=eq.true"] })
+        .then(function(r) { animateNumber("activeBanners", r.count || 0); });
 
-        adminQuery("contact_messages", {
-            select: "id", count: true, limit: 0
-        }).then(function(r) { animateNumber("totalMessages", r.count || 0); });
+        adminQuery("contact_messages", { select: "id", count: true, limit: 0 })
+        .then(function(r) { animateNumber("totalMessages", r.count || 0); });
 
         adminQuery("products", { order: "created_at.desc", limit: 5 })
         .then(function(result) {
             var el = document.getElementById("recentProducts");
             var items = result.data;
-            if (!items || items.length === 0) {
-                el.innerHTML = "<p class=\"empty-text\">No products yet</p>";
-                return;
-            }
+            if (!items || items.length === 0) { el.innerHTML = "<p class=\"empty-text\">No products yet</p>"; return; }
             var html = "";
             for (var i = 0; i < items.length; i++) {
                 var p = items[i];
                 html += "<div class=\"recent-item\">"
                     + "<img src=\"" + p.image_url + "\" class=\"recent-img\" alt=\"\" onerror=\"this.src='https://via.placeholder.com/50'\">"
-                    + "<div class=\"recent-info\">"
-                    + "<h4>" + p.title + "</h4>"
-                    + "<span class=\"recent-meta\">Rs." + Number(p.price).toLocaleString("en-IN") + "</span>"
-                    + "</div>"
+                    + "<div class=\"recent-info\"><h4>" + p.title + "</h4>"
+                    + "<span class=\"recent-meta\">Rs." + Number(p.price).toLocaleString("en-IN") + "</span></div>"
                     + (p.is_featured ? "<span class=\"badge badge-gold\">Featured</span>" : "<span class=\"badge badge-gray\">Regular</span>")
                     + "</div>";
             }
@@ -222,27 +156,20 @@
         .then(function(result) {
             var el = document.getElementById("recentMessages");
             var items = result.data;
-            if (!items || items.length === 0) {
-                el.innerHTML = "<p class=\"empty-text\">No messages yet</p>";
-                return;
-            }
+            if (!items || items.length === 0) { el.innerHTML = "<p class=\"empty-text\">No messages yet</p>"; return; }
             var html = "";
             for (var i = 0; i < items.length; i++) {
                 var m = items[i];
                 html += "<div class=\"recent-item\">"
                     + "<div class=\"recent-avatar\">" + m.name.charAt(0).toUpperCase() + "</div>"
-                    + "<div class=\"recent-info\">"
-                    + "<h4>" + m.name + "</h4>"
-                    + "<span class=\"recent-meta\">" + m.email + "</span>"
-                    + "</div>"
+                    + "<div class=\"recent-info\"><h4>" + m.name + "</h4>"
+                    + "<span class=\"recent-meta\">" + m.email + "</span></div>"
                     + "<span class=\"recent-time\">" + timeAgo(m.created_at) + "</span>"
                     + "</div>";
             }
             el.innerHTML = html;
         });
-
     });
 </script>
-
 </body>
 </html>
