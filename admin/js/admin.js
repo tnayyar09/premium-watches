@@ -2,10 +2,10 @@ var SUPABASE_URL = "https://fxpxsmnakwqczgrhiwkl.supabase.co";
 var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4cHhzbW5ha3dxY3pncmhpd2tsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MjU5MzAsImV4cCI6MjA5MjQwMTkzMH0.-gmIrIiWakuHKOiuDnlW9ZQOJWRntDHUTkzXiU79Hao";
 
 function setSupabaseConfig(url, key) {
-    if (url && url !== "https://YOUR_PROJECT_ID.supabase.co") {
+    if (url && url !== "https://fxpxsmnakwqczgrhiwkl.supabase.co") {
         SUPABASE_URL = url;
     }
-    if (key && key !== "YOUR_ANON_KEY_HERE") {
+    if (key && key !== "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4cHhzbW5ha3dxY3pncmhpd2tsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MjU5MzAsImV4cCI6MjA5MjQwMTkzMH0.-gmIrIiWakuHKOiuDnlW9ZQOJWRntDHUTkzXiU79Hao") {
         SUPABASE_KEY = key;
     }
 }
