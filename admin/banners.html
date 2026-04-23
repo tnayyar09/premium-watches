@@ -122,146 +122,149 @@
 
 <div class="toast-container" id="toastContainer"></div>
 
-<script src="js/admin.js"></script>
-<script src="js/auth.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        checkAuth();
+    <script src="../js/config.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            checkAuth();
 
-        var deleteBannerId = null;
+            var deleteBannerId = null;
 
-        document.getElementById("addBannerBtn").addEventListener("click", function() { openBannerModal(null); });
-        document.getElementById("closeBannerModal").addEventListener("click", closeBannerModal);
-        document.getElementById("cancelBanner").addEventListener("click", closeBannerModal);
-        document.getElementById("bannerModal").addEventListener("click", function(e) { if (e.target === this) { closeBannerModal(); } });
+            document.getElementById("addBannerBtn").addEventListener("click", function() { openBannerModal(null); });
+            document.getElementById("closeBannerModal").addEventListener("click", closeBannerModal);
+            document.getElementById("cancelBanner").addEventListener("click", closeBannerModal);
+            document.getElementById("bannerModal").addEventListener("click", function(e) { if (e.target === this) { closeBannerModal(); } });
 
-        document.getElementById("bannerImageUrl").addEventListener("input", function() {
-            var preview = document.getElementById("bannerImagePreview");
-            if (this.value) {
-                preview.innerHTML = "<img src=\"" + this.value + "\" alt=\"Preview\" style=\"width:100%;height:100%;object-fit:cover;\">";
-            } else {
-                preview.innerHTML = "<i class=\"fas fa-image\"></i><span>Banner Preview</span>";
-            }
-        });
+            document.getElementById("bannerImageUrl").addEventListener("input", function() {
+                var preview = document.getElementById("bannerImagePreview");
+                if (this.value) {
+                    preview.innerHTML = "<img src=\"" + this.value + "\" alt=\"Preview\" style=\"width:100%;height:100%;object-fit:cover;\">";
+                } else {
+                    preview.innerHTML = "<i class=\"fas fa-image\"></i><span>Banner Preview</span>";
+                }
+            });
 
-        document.getElementById("bannerActive").addEventListener("change", function() {
-            document.getElementById("bannerActiveLabel").textContent = this.checked ? "Active" : "Inactive";
-        });
+            document.getElementById("bannerActive").addEventListener("change", function() {
+                document.getElementById("bannerActiveLabel").textContent = this.checked ? "Active" : "Inactive";
+            });
 
-        document.getElementById("cancelBannerDelete").addEventListener("click", function() {
-            document.getElementById("deleteBannerModal").classList.remove("active");
-        });
-
-        document.getElementById("confirmBannerDelete").addEventListener("click", function() {
-            if (!deleteBannerId) { return; }
-            adminDelete("banners", deleteBannerId).then(function(ok) {
-                if (ok) { showToast("Banner deleted!", "success"); loadBanners(); }
-                else { showToast("Delete failed!", "error"); }
+            document.getElementById("cancelBannerDelete").addEventListener("click", function() {
                 document.getElementById("deleteBannerModal").classList.remove("active");
-                deleteBannerId = null;
             });
-        });
 
-        document.getElementById("bannerForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            saveBanner();
-        });
+            document.getElementById("confirmBannerDelete").addEventListener("click", function() {
+                if (!deleteBannerId) { return; }
+                adminDelete("banners", deleteBannerId).then(function(ok) {
+                    if (ok) { showToast("Deleted!", "success"); loadBanners(); }
+                    else { showToast("Failed!", "error"); }
+                    document.getElementById("deleteBannerModal").classList.remove("active");
+                    deleteBannerId = null;
+                });
+            });
 
-        function openBannerModal(banner) {
-            document.getElementById("bannerForm").reset();
-            document.getElementById("bannerImagePreview").innerHTML = "<i class=\"fas fa-image\"></i><span>Banner Preview</span>";
-            document.getElementById("bannerActive").checked = true;
-            document.getElementById("bannerActiveLabel").textContent = "Active";
-            if (banner) {
-                document.getElementById("bannerModalTitle").innerHTML = "<i class=\"fas fa-edit\"></i> Edit Banner";
-                document.getElementById("bannerId").value = banner.id;
-                document.getElementById("bannerImageUrl").value = banner.image_url || "";
-                document.getElementById("bannerTitle").value = banner.title || "";
-                document.getElementById("bannerSubtitle").value = banner.subtitle || "";
-                document.getElementById("bannerOrder").value = banner.sort_order || 0;
-                document.getElementById("bannerActive").checked = banner.is_active ? true : false;
-                document.getElementById("bannerActiveLabel").textContent = banner.is_active ? "Active" : "Inactive";
-                if (banner.image_url) {
-                    document.getElementById("bannerImagePreview").innerHTML = "<img src=\"" + banner.image_url + "\" alt=\"Preview\" style=\"width:100%;height:100%;object-fit:cover;\">";
+            document.getElementById("bannerForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                saveBanner();
+            });
+
+            function openBannerModal(banner) {
+                document.getElementById("bannerForm").reset();
+                document.getElementById("bannerImagePreview").innerHTML = "<i class=\"fas fa-image\"></i><span>Banner Preview</span>";
+                document.getElementById("bannerActive").checked = true;
+                document.getElementById("bannerActiveLabel").textContent = "Active";
+                if (banner) {
+                    document.getElementById("bannerModalTitle").innerHTML = "<i class=\"fas fa-edit\"></i> Edit Banner";
+                    document.getElementById("bannerId").value = banner.id;
+                    document.getElementById("bannerImageUrl").value = banner.image_url || "";
+                    document.getElementById("bannerTitle").value = banner.title || "";
+                    document.getElementById("bannerSubtitle").value = banner.subtitle || "";
+                    document.getElementById("bannerOrder").value = banner.sort_order || 0;
+                    document.getElementById("bannerActive").checked = banner.is_active ? true : false;
+                    document.getElementById("bannerActiveLabel").textContent = banner.is_active ? "Active" : "Inactive";
+                    if (banner.image_url) {
+                        document.getElementById("bannerImagePreview").innerHTML = "<img src=\"" + banner.image_url + "\" alt=\"Preview\" style=\"width:100%;height:100%;object-fit:cover;\">";
+                    }
+                } else {
+                    document.getElementById("bannerModalTitle").innerHTML = "<i class=\"fas fa-plus-circle\"></i> Add New Banner";
+                    document.getElementById("bannerId").value = "";
                 }
-            } else {
-                document.getElementById("bannerModalTitle").innerHTML = "<i class=\"fas fa-plus-circle\"></i> Add New Banner";
-                document.getElementById("bannerId").value = "";
+                document.getElementById("bannerModal").classList.add("active");
             }
-            document.getElementById("bannerModal").classList.add("active");
-        }
 
-        function closeBannerModal() {
-            document.getElementById("bannerModal").classList.remove("active");
-        }
+            function closeBannerModal() {
+                document.getElementById("bannerModal").classList.remove("active");
+            }
 
-        function saveBanner() {
-            var id = document.getElementById("bannerId").value;
-            var body = {
-                image_url: document.getElementById("bannerImageUrl").value.trim(),
-                title: document.getElementById("bannerTitle").value.trim(),
-                subtitle: document.getElementById("bannerSubtitle").value.trim(),
-                sort_order: parseInt(document.getElementById("bannerOrder").value) || 0,
-                is_active: document.getElementById("bannerActive").checked
+            function saveBanner() {
+                var id = document.getElementById("bannerId").value;
+                var body = {
+                    image_url: document.getElementById("bannerImageUrl").value.trim(),
+                    title: document.getElementById("bannerTitle").value.trim(),
+                    subtitle: document.getElementById("bannerSubtitle").value.trim(),
+                    sort_order: parseInt(document.getElementById("bannerOrder").value) || 0,
+                    is_active: document.getElementById("bannerActive").checked
+                };
+                var promise = id ? adminUpdate("banners", id, body) : adminInsert("banners", body);
+                promise.then(function(ok) {
+                    if (ok) { showToast(id ? "Updated!" : "Added!", "success"); closeBannerModal(); loadBanners(); }
+                    else { showToast("Failed!", "error"); }
+                });
+            }
+
+            window.editBanner = function(id) {
+                adminQuery("banners", { filters: ["id=eq." + id] }).then(function(r) {
+                    if (r.data && r.data.length > 0) { openBannerModal(r.data[0]); }
+                });
             };
-            var promise = id ? adminUpdate("banners", id, body) : adminInsert("banners", body);
-            promise.then(function(ok) {
-                if (ok) { showToast(id ? "Banner updated!" : "Banner added!", "success"); closeBannerModal(); loadBanners(); }
-                else { showToast("Save failed!", "error"); }
-            });
-        }
 
-        window.editBanner = function(id) {
-            adminQuery("banners", { filters: ["id=eq." + id] }).then(function(r) {
-                if (r.data && r.data.length > 0) { openBannerModal(r.data[0]); }
-            });
-        };
+            window.toggleBanner = function(id, currentStatus) {
+                adminUpdate("banners", id, { is_active: !currentStatus }).then(function(ok) {
+                    if (ok) { showToast(currentStatus ? "Hidden!" : "Activated!", "success"); loadBanners(); }
+                });
+            };
 
-        window.toggleBanner = function(id, currentStatus) {
-            adminUpdate("banners", id, { is_active: !currentStatus }).then(function(ok) {
-                if (ok) { showToast(currentStatus ? "Banner hidden!" : "Activated!", "success"); loadBanners(); }
-            });
-        };
+            window.deleteBanner = function(id) {
+                deleteBannerId = id;
+                document.getElementById("deleteBannerModal").classList.add("active");
+            };
 
-        window.deleteBanner = function(id) {
-            deleteBannerId = id;
-            document.getElementById("deleteBannerModal").classList.add("active");
-        };
+            function loadBanners() {
+                var grid = document.getElementById("bannersGrid");
+                grid.innerHTML = "<div class=\"loading-spinner\"><i class=\"fas fa-spinner fa-spin\"></i> Loading...</div>";
+                adminQuery("banners", { order: "sort_order.asc" }).then(function(result) {
+                    var data = result.data;
+                    if (!data || data.length === 0) {
+                        grid.innerHTML = "<div class=\"empty-state\"><i class=\"fas fa-images\"></i><h3>No Banners</h3></div>";
+                        return;
+                    }
+                    var html = "";
+                    for (var i = 0; i < data.length; i++) {
+                        var b = data[i];
+                        html += "<div class=\"banner-card " + (b.is_active ? "" : "inactive") + "\">"
+                            + "<div class=\"banner-card-img\">"
+                            + "<img src=\"" + b.image_url + "\" alt=\"Banner\" onerror=\"this.src='https://via.placeholder.com/400x200'\">"
+                            + "<div class=\"banner-card-overlay\">"
+                            + "<span class=\"badge " + (b.is_active ? "badge-green" : "badge-red") + "\">" + (b.is_active ? "Active" : "Inactive") + "</span>"
+                            + "<span class=\"badge badge-blue\">Order: " + b.sort_order + "</span>"
+                            + "</div></div>"
+                            + "<div class=\"banner-card-info\">"
+                            + "<h4>" + (b.title || "No Title") + "</h4>"
+                            + "<p>" + (b.subtitle || "No subtitle") + "</p>"
+                            + "<div class=\"banner-card-actions\">"
+                            + "<button class=\"action-btn edit-btn\" onclick=\"editBanner(" + b.id + ")\"><i class=\"fas fa-edit\"></i> Edit</button>"
+                            + "<button class=\"action-btn " + (b.is_active ? "warn-btn" : "success-btn") + "\" onclick=\"toggleBanner(" + b.id + ", " + b.is_active + ")\"><i class=\"fas fa-" + (b.is_active ? "eye-slash" : "eye") + "\"></i> " + (b.is_active ? "Hide" : "Show") + "</button>"
+                            + "<button class=\"action-btn delete-btn\" onclick=\"deleteBanner(" + b.id + ")\"><i class=\"fas fa-trash\"></i> Delete</button>"
+                            + "</div></div></div>";
+                    }
+                    grid.innerHTML = html;
+                });
+            }
 
-        function loadBanners() {
-            var grid = document.getElementById("bannersGrid");
-            grid.innerHTML = "<div class=\"loading-spinner\"><i class=\"fas fa-spinner fa-spin\"></i> Loading...</div>";
-            adminQuery("banners", { order: "sort_order.asc" }).then(function(result) {
-                var data = result.data;
-                if (!data || data.length === 0) {
-                    grid.innerHTML = "<div class=\"empty-state\"><i class=\"fas fa-images\"></i><h3>No Banners Yet</h3><p>Add your first banner.</p></div>";
-                    return;
-                }
-                var html = "";
-                for (var i = 0; i < data.length; i++) {
-                    var b = data[i];
-                    html += "<div class=\"banner-card " + (b.is_active ? "" : "inactive") + "\">"
-                        + "<div class=\"banner-card-img\">"
-                        + "<img src=\"" + b.image_url + "\" alt=\"Banner\" onerror=\"this.src='https://via.placeholder.com/400x200'\">"
-                        + "<div class=\"banner-card-overlay\">"
-                        + "<span class=\"badge " + (b.is_active ? "badge-green" : "badge-red") + "\">" + (b.is_active ? "Active" : "Inactive") + "</span>"
-                        + "<span class=\"badge badge-blue\">Order: " + b.sort_order + "</span>"
-                        + "</div></div>"
-                        + "<div class=\"banner-card-info\">"
-                        + "<h4>" + (b.title || "No Title") + "</h4>"
-                        + "<p>" + (b.subtitle || "No subtitle") + "</p>"
-                        + "<div class=\"banner-card-actions\">"
-                        + "<button class=\"action-btn edit-btn\" onclick=\"editBanner(" + b.id + ")\"><i class=\"fas fa-edit\"></i> Edit</button>"
-                        + "<button class=\"action-btn " + (b.is_active ? "warn-btn" : "success-btn") + "\" onclick=\"toggleBanner(" + b.id + ", " + b.is_active + ")\"><i class=\"fas fa-" + (b.is_active ? "eye-slash" : "eye") + "\"></i> " + (b.is_active ? "Hide" : "Show") + "</button>"
-                        + "<button class=\"action-btn delete-btn\" onclick=\"deleteBanner(" + b.id + ")\"><i class=\"fas fa-trash\"></i> Delete</button>"
-                        + "</div></div></div>";
-                }
-                grid.innerHTML = html;
-            });
-        }
-
-        loadBanners();
-    });
-</script>
+            loadBanners();
+        });
+    </script>
+</body>
+</html>
 </body>
 </html>

@@ -1,5 +1,5 @@
-var SUPABASE_URL = "https://fxpxsmnakwqczgrhiwkl.supabase.co";
-var SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4cHhzbW5ha3dxY3pncmhpd2tsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MjU5MzAsImV4cCI6MjA5MjQwMTkzMH0.-gmIrIiWakuHKOiuDnlW9ZQOJWRntDHUTkzXiU79Hao";
+var SUPABASE_URL = "aHR0cHM6Ly9meHB4c21uYWt3cWN6Z3JoaXdrbC5zdXBhYmFzZS5jbw==";
+var SUPABASE_KEY = "ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKemRYQmhZbUZ6WlNJc0luSmxaaUk2SW1aNGNIaHpiVzVoYTNkeFkzcG5jbWhwZDJ0c0lpd2ljbTlzWlNJNkltRnViMjRpTENKcFlYUWlPakUzTnpZNE1qVTVNekFzSW1WNGNDSTZNakE1TWpRd01Ua3pNSDAuLWdtSXJJaVdha3VIS09pdURubFc5WlFPSldSbnRESFVUa3pYaVU3OUhhbw==";
 
 function checkAuth() {
     if (sessionStorage.getItem("adminLoggedIn") !== "true") {

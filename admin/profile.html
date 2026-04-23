@@ -107,21 +107,123 @@
 
 <div class="toast-container" id="toastContainer"></div>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - LUXE WATCHES Admin</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo"><i class="fas fa-clock"></i><div><span class="logo-main">LUXE</span><span class="logo-sub">ADMIN</span></div></div>
+        <button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+        <a href="products.html" class="nav-item"><i class="fas fa-box"></i><span>Products</span></a>
+        <a href="banners.html" class="nav-item"><i class="fas fa-images"></i><span>Banners</span></a>
+        <a href="messages.html" class="nav-item"><i class="fas fa-envelope"></i><span>Messages</span></a>
+        <div class="nav-divider"></div>
+        <a href="profile.html" class="nav-item active"><i class="fas fa-user"></i><span>Profile</span></a>
+        <a href="change-password.html" class="nav-item"><i class="fas fa-key"></i><span>Change Password</span></a>
+        <a href="manage-users.html" class="nav-item"><i class="fas fa-users-cog"></i><span>Manage Users</span></a>
+        <div class="nav-divider"></div>
+        <a href="../index.html" target="_blank" class="nav-item"><i class="fas fa-globe"></i><span>View Website</span></a>
+        <a href="#" class="nav-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    </nav>
+</aside>
+
+<main class="main-content">
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+            <h2>My Profile</h2>
+        </div>
+        <div class="topbar-right">
+            <div class="admin-info">
+                <div class="admin-avatar"><i class="fas fa-user-shield"></i></div>
+                <span id="adminName">Admin</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="content-area">
+        <div class="profile-layout">
+            <div class="profile-sidebar-card">
+                <div class="profile-avatar-large" id="profileAvatarDisplay">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3 id="profileDisplayName">Loading...</h3>
+                <p class="profile-role" id="profileDisplayRole">Admin</p>
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <span class="stat-label">Username</span>
+                        <span class="stat-value" id="profileDisplayUsername">-</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-label">Email</span>
+                        <span class="stat-value" id="profileDisplayEmail">-</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-label">Last Login</span>
+                        <span class="stat-value" id="profileLastLogin">-</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-label">Member Since</span>
+                        <span class="stat-value" id="profileCreated">-</span>
+                    </div>
+                </div>
+                <a href="change-password.html" class="btn-save btn-full" style="margin-top:15px;">
+                    <i class="fas fa-key"></i> Change Password
+                </a>
+            </div>
+
+            <div class="profile-edit-card">
+                <h3><i class="fas fa-edit"></i> Edit Profile</h3>
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Full Name</label>
+                        <input type="text" id="editFullName" placeholder="Your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="editEmail" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-image"></i> Avatar URL</label>
+                        <input type="url" id="editAvatarUrl" placeholder="https://example.com/avatar.jpg">
+                    </div>
+                    <button type="submit" class="btn-save" id="saveProfileBtn">
+                        <span class="btn-text"><i class="fas fa-save"></i> Save Changes</span>
+                        <span class="btn-loading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Saving...</span>
+                    </button>
+                </form>
+                <div class="auth-result" id="profileResult" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="../js/config.js"></script>
 <script src="js/admin.js"></script>
 <script src="js/auth.js"></script>
 <script>
-    setSupabaseConfig(
-        "https://fxpxsmnakwqczgrhiwkl.supabase.co",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4cHhzbW5ha3dxY3pncmhpd2tsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MjU5MzAsImV4cCI6MjA5MjQwMTkzMH0.-gmIrIiWakuHKOiuDnlW9ZQOJWRntDHUTkzXiU79Hao"
-    );
-    checkAuth();
-
     document.addEventListener("DOMContentLoaded", function() {
+        checkAuth();
+
         var userId = getCurrentUserId();
-        if (!userId) return;
+        if (!userId) { return; }
 
         adminQuery("admin_users", { filters: ["id=eq." + userId] }).then(function(r) {
-            if (!r.data || r.data.length === 0) return;
+            if (!r.data || r.data.length === 0) { return; }
             var u = r.data[0];
 
             document.getElementById("profileDisplayName").textContent = u.full_name || u.username;
@@ -139,37 +241,43 @@
                 document.getElementById("profileAvatarDisplay").innerHTML = "<img src=\"" + u.avatar_url + "\" alt=\"Avatar\" style=\"width:100%;height:100%;object-fit:cover;border-radius:50%;\">";
             }
         });
-    });
 
-    document.getElementById("profileForm").addEventListener("submit", function(e) {
-        e.preventDefault();
-        var userId = getCurrentUserId();
-        var resultEl = document.getElementById("profileResult");
-        var btn = document.getElementById("saveProfileBtn");
+        var profileForm = document.getElementById("profileForm");
+        if (profileForm) {
+            profileForm.addEventListener("submit", function(e) {
+                e.preventDefault();
+                var resultEl = document.getElementById("profileResult");
+                var btn = document.getElementById("saveProfileBtn");
+                var btnText = btn.querySelector(".btn-text");
+                var btnLoading = btn.querySelector(".btn-loading");
 
-        btn.querySelector(".btn-text").style.display = "none";
-        btn.querySelector(".btn-loading").style.display = "inline-flex";
-        resultEl.style.display = "none";
+                btnText.style.display = "none";
+                btnLoading.style.display = "inline-flex";
+                resultEl.style.display = "none";
 
-        updateProfile(userId, {
-            fullName: document.getElementById("editFullName").value.trim(),
-            email: document.getElementById("editEmail").value.trim(),
-            avatarUrl: document.getElementById("editAvatarUrl").value.trim()
-        }).then(function(result) {
-            if (result.success) {
-                resultEl.className = "auth-result success";
-                resultEl.innerHTML = "<i class=\"fas fa-check-circle\"></i> " + result.message;
-                showToast("Profile updated!", "success");
-            } else {
-                resultEl.className = "auth-result error";
-                resultEl.innerHTML = "<i class=\"fas fa-exclamation-circle\"></i> " + result.error;
-            }
-            resultEl.style.display = "flex";
-            btn.querySelector(".btn-text").style.display = "inline-flex";
-            btn.querySelector(".btn-loading").style.display = "none";
-        });
+                updateProfile(userId, {
+                    fullName: document.getElementById("editFullName").value.trim(),
+                    email: document.getElementById("editEmail").value.trim(),
+                    avatarUrl: document.getElementById("editAvatarUrl").value.trim()
+                }).then(function(result) {
+                    if (result.success) {
+                        resultEl.className = "auth-result success";
+                        resultEl.innerHTML = "<i class=\"fas fa-check-circle\"></i> " + result.message;
+                        showToast("Profile updated!", "success");
+                    } else {
+                        resultEl.className = "auth-result error";
+                        resultEl.innerHTML = "<i class=\"fas fa-exclamation-circle\"></i> " + result.error;
+                    }
+                    resultEl.style.display = "flex";
+                    btnText.style.display = "inline-flex";
+                    btnLoading.style.display = "none";
+                });
+            });
+        }
     });
 </script>
+</body>
+</html>
 
 </body>
 </html>

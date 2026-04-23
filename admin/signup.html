@@ -80,108 +80,98 @@
     </div>
 </div>
 
-<script src="js/admin.js"></script>
-<script src="js/auth.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-
-        var t1 = document.getElementById("togglePass1");
-        var t2 = document.getElementById("togglePass2");
-
-        if (t1) {
-            t1.addEventListener("click", function() {
-                var inp = document.getElementById("signupPassword");
-                var ico = this.querySelector("i");
-                if (inp.type === "password") { inp.type = "text"; ico.className = "fas fa-eye-slash"; }
-                else { inp.type = "password"; ico.className = "fas fa-eye"; }
-            });
-        }
-
-        if (t2) {
-            t2.addEventListener("click", function() {
-                var inp = document.getElementById("signupConfirmPassword");
-                var ico = this.querySelector("i");
-                if (inp.type === "password") { inp.type = "text"; ico.className = "fas fa-eye-slash"; }
-                else { inp.type = "password"; ico.className = "fas fa-eye"; }
-            });
-        }
-
-        var passInput = document.getElementById("signupPassword");
-        if (passInput) {
-            passInput.addEventListener("input", function() {
-                var val = this.value;
-                var el = document.getElementById("passStrength");
-                if (!val) { el.innerHTML = ""; return; }
-                var score = 0;
-                if (val.length >= 6) score++;
-                if (val.length >= 10) score++;
-                if (/[A-Z]/.test(val)) score++;
-                if (/[0-9]/.test(val)) score++;
-                if (/[^A-Za-z0-9]/.test(val)) score++;
-                var labels = ["Very Weak", "Weak", "Fair", "Strong", "Very Strong"];
-                var colors = ["#e74c3c", "#e67e22", "#f1c40f", "#2ecc71", "#27ae60"];
-                var widths = ["20%", "40%", "60%", "80%", "100%"];
-                var idx = Math.min(score, 4);
-                el.innerHTML = "<div class=\"strength-bar\"><div class=\"strength-fill\" style=\"width:" + widths[idx] + ";background:" + colors[idx] + "\"></div></div>"
-                    + "<span style=\"color:" + colors[idx] + ";font-size:0.75rem;\">" + labels[idx] + "</span>";
-            });
-        }
-
-        var signupForm = document.getElementById("signupForm");
-        if (signupForm) {
-            signupForm.addEventListener("submit", function(e) {
-                e.preventDefault();
-                var name = document.getElementById("signupName").value.trim();
-                var username = document.getElementById("signupUsername").value.trim();
-                var email = document.getElementById("signupEmail").value.trim();
-                var password = document.getElementById("signupPassword").value;
-                var confirmPass = document.getElementById("signupConfirmPassword").value;
-                var errorEl = document.getElementById("signupError");
-                var errorText = document.getElementById("signupErrorText");
-                var successEl = document.getElementById("signupSuccess");
-                var successText = document.getElementById("signupSuccessText");
-                var btn = document.getElementById("signupBtn");
-                var btnText = btn.querySelector(".btn-text");
-                var btnLoading = btn.querySelector(".btn-loading");
-
-                errorEl.style.display = "none";
-                successEl.style.display = "none";
-
-                if (password !== confirmPass) {
-                    errorText.textContent = "Passwords do not match!";
-                    errorEl.style.display = "flex";
-                    return;
-                }
-
-                btnText.style.display = "none";
-                btnLoading.style.display = "inline-flex";
-                btn.disabled = true;
-
-                signupUser({
-                    fullName: name,
-                    username: username,
-                    email: email,
-                    password: password
-                }).then(function(result) {
-                    if (result.success) {
-                        successText.textContent = result.message;
-                        successEl.style.display = "flex";
-                        signupForm.reset();
-                        document.getElementById("passStrength").innerHTML = "";
-                        setTimeout(function() {
-                            window.location.href = "index.html";
-                        }, 2000);
-                    } else {
-                        errorText.textContent = result.error;
-                        errorEl.style.display = "flex";
-                    }
-                    btnText.style.display = "inline-flex";
-                    btnLoading.style.display = "none";
-                    btn.disabled = false;
+    <script src="../js/config.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var t1 = document.getElementById("togglePass1");
+            var t2 = document.getElementById("togglePass2");
+            if (t1) {
+                t1.addEventListener("click", function() {
+                    var inp = document.getElementById("signupPassword");
+                    var ico = this.querySelector("i");
+                    if (inp.type === "password") { inp.type = "text"; ico.className = "fas fa-eye-slash"; }
+                    else { inp.type = "password"; ico.className = "fas fa-eye"; }
                 });
-            });
-        }
-    });
-</script>
+            }
+            if (t2) {
+                t2.addEventListener("click", function() {
+                    var inp = document.getElementById("signupConfirmPassword");
+                    var ico = this.querySelector("i");
+                    if (inp.type === "password") { inp.type = "text"; ico.className = "fas fa-eye-slash"; }
+                    else { inp.type = "password"; ico.className = "fas fa-eye"; }
+                });
+            }
+            var passInput = document.getElementById("signupPassword");
+            if (passInput) {
+                passInput.addEventListener("input", function() {
+                    var val = this.value;
+                    var el = document.getElementById("passStrength");
+                    if (!el) { return; }
+                    if (!val) { el.innerHTML = ""; return; }
+                    var score = 0;
+                    if (val.length >= 6) { score++; }
+                    if (val.length >= 10) { score++; }
+                    if (/[A-Z]/.test(val)) { score++; }
+                    if (/[0-9]/.test(val)) { score++; }
+                    if (/[^A-Za-z0-9]/.test(val)) { score++; }
+                    var labels = ["Very Weak", "Weak", "Fair", "Strong", "Very Strong"];
+                    var colors = ["#e74c3c", "#e67e22", "#f1c40f", "#2ecc71", "#27ae60"];
+                    var widths = ["20%", "40%", "60%", "80%", "100%"];
+                    var idx = Math.min(score, 4);
+                    el.innerHTML = "<div class=\"strength-bar\"><div class=\"strength-fill\" style=\"width:" + widths[idx] + ";background:" + colors[idx] + "\"></div></div>"
+                        + "<span style=\"color:" + colors[idx] + ";font-size:0.75rem;\">" + labels[idx] + "</span>";
+                });
+            }
+            var signupForm = document.getElementById("signupForm");
+            if (signupForm) {
+                signupForm.addEventListener("submit", function(e) {
+                    e.preventDefault();
+                    var name = document.getElementById("signupName").value.trim();
+                    var username = document.getElementById("signupUsername").value.trim();
+                    var email = document.getElementById("signupEmail").value.trim();
+                    var password = document.getElementById("signupPassword").value;
+                    var confirmPass = document.getElementById("signupConfirmPassword").value;
+                    var errorEl = document.getElementById("signupError");
+                    var errorText = document.getElementById("signupErrorText");
+                    var successEl = document.getElementById("signupSuccess");
+                    var successText = document.getElementById("signupSuccessText");
+                    var btn = document.getElementById("signupBtn");
+                    var btnText = btn.querySelector(".btn-text");
+                    var btnLoading = btn.querySelector(".btn-loading");
+                    errorEl.style.display = "none";
+                    successEl.style.display = "none";
+                    if (password !== confirmPass) {
+                        errorText.textContent = "Passwords do not match!";
+                        errorEl.style.display = "flex";
+                        return;
+                    }
+                    btnText.style.display = "none";
+                    btnLoading.style.display = "inline-flex";
+                    btn.disabled = true;
+                    signupUser({
+                        fullName: name, username: username,
+                        email: email, password: password
+                    }).then(function(result) {
+                        if (result.success) {
+                            successText.textContent = result.message;
+                            successEl.style.display = "flex";
+                            signupForm.reset();
+                            setTimeout(function() { window.location.href = "index.html"; }, 2000);
+                        } else {
+                            errorText.textContent = result.error;
+                            errorEl.style.display = "flex";
+                        }
+                        btnText.style.display = "inline-flex";
+                        btnLoading.style.display = "none";
+                        btn.disabled = false;
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
 </body>
 </html>

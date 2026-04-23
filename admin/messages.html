@@ -79,114 +79,111 @@
 
 <div class="toast-container" id="toastContainer"></div>
 
-<script src="js/admin.js"></script>
-<script src="js/auth.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        checkAuth();
+    <script src="../js/config.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            checkAuth();
 
-        var msgPage = 1;
-        var MSG_PER_PAGE = 10;
-        var deleteMsgId = null;
+            var msgPage = 1;
+            var MSG_PER_PAGE = 10;
+            var deleteMsgId = null;
 
-        document.getElementById("closeViewMessage").addEventListener("click", function() {
-            document.getElementById("viewMessageModal").classList.remove("active");
-        });
-        document.getElementById("viewMessageModal").addEventListener("click", function(e) {
-            if (e.target === this) { this.classList.remove("active"); }
-        });
-        document.getElementById("cancelMsgDelete").addEventListener("click", function() {
-            document.getElementById("deleteMsgModal").classList.remove("active");
-        });
-        document.getElementById("confirmMsgDelete").addEventListener("click", function() {
-            if (!deleteMsgId) { return; }
-            adminDelete("contact_messages", deleteMsgId).then(function(ok) {
-                if (ok) { showToast("Deleted!", "success"); loadMessages(msgPage); }
-                else { showToast("Failed!", "error"); }
+            document.getElementById("closeViewMessage").addEventListener("click", function() {
+                document.getElementById("viewMessageModal").classList.remove("active");
+            });
+            document.getElementById("viewMessageModal").addEventListener("click", function(e) {
+                if (e.target === this) { this.classList.remove("active"); }
+            });
+            document.getElementById("cancelMsgDelete").addEventListener("click", function() {
                 document.getElementById("deleteMsgModal").classList.remove("active");
-                deleteMsgId = null;
             });
+            document.getElementById("confirmMsgDelete").addEventListener("click", function() {
+                if (!deleteMsgId) { return; }
+                adminDelete("contact_messages", deleteMsgId).then(function(ok) {
+                    if (ok) { showToast("Deleted!", "success"); loadMessages(msgPage); }
+                    else { showToast("Failed!", "error"); }
+                    document.getElementById("deleteMsgModal").classList.remove("active");
+                    deleteMsgId = null;
+                });
+            });
+
+            var searchTimer = null;
+            document.getElementById("searchMessages").addEventListener("input", function() {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(function() { loadMessages(1); }, 400);
+            });
+
+            window.viewMessage = function(id) {
+                adminQuery("contact_messages", { filters: ["id=eq." + id] }).then(function(r) {
+                    if (!r.data || r.data.length === 0) { return; }
+                    var m = r.data[0];
+                    var phoneRow = m.phone ? "<div class=\"msg-detail-row\"><label><i class=\"fas fa-phone\"></i> Phone</label><p>" + m.phone + "</p></div>" : "";
+                    var waBtn = m.phone ? "<a href=\"https://wa.me/" + m.phone.replace(/[^0-9]/g, "") + "\" target=\"_blank\" class=\"btn-add\" style=\"background:#25D366;color:white;\"><i class=\"fab fa-whatsapp\"></i> WhatsApp</a>" : "";
+                    document.getElementById("messageDetails").innerHTML =
+                        "<div class=\"message-detail-card\">"
+                        + "<div class=\"msg-detail-row\"><label><i class=\"fas fa-user\"></i> Name</label><p>" + m.name + "</p></div>"
+                        + "<div class=\"msg-detail-row\"><label><i class=\"fas fa-envelope\"></i> Email</label><p><a href=\"mailto:" + m.email + "\">" + m.email + "</a></p></div>"
+                        + phoneRow
+                        + "<div class=\"msg-detail-row\"><label><i class=\"fas fa-calendar\"></i> Date</label><p>" + new Date(m.created_at).toLocaleString() + "</p></div>"
+                        + "<div class=\"msg-detail-row\"><label><i class=\"fas fa-comment-dots\"></i> Message</label><div class=\"msg-full-text\">" + m.message + "</div></div>"
+                        + "<div class=\"msg-detail-actions\">"
+                        + "<a href=\"mailto:" + m.email + "\" class=\"btn-save\"><i class=\"fas fa-reply\"></i> Reply</a>"
+                        + waBtn + "</div></div>";
+                    document.getElementById("viewMessageModal").classList.add("active");
+                });
+            };
+
+            window.deleteMsg = function(id) {
+                deleteMsgId = id;
+                document.getElementById("deleteMsgModal").classList.add("active");
+            };
+
+            function loadMessages(page) {
+                if (!page) { page = 1; }
+                msgPage = page;
+                var container = document.getElementById("messagesList");
+                container.innerHTML = "<div class=\"loading-spinner\"><i class=\"fas fa-spinner fa-spin\"></i> Loading...</div>";
+                var offset = (page - 1) * MSG_PER_PAGE;
+                adminQuery("contact_messages", { order: "created_at.desc", limit: MSG_PER_PAGE, offset: offset, count: true })
+                .then(function(result) {
+                    var data = result.data;
+                    var count = result.count || 0;
+                    document.getElementById("messagesCount").textContent = count + " total messages";
+                    if (!data || data.length === 0) {
+                        container.innerHTML = "<div class=\"empty-state\"><i class=\"fas fa-inbox\"></i><h3>No Messages</h3></div>";
+                        document.getElementById("messagesPagination").innerHTML = "";
+                        return;
+                    }
+                    var html = "";
+                    for (var i = 0; i < data.length; i++) {
+                        var m = data[i];
+                        var preview = m.message ? m.message.substring(0, 100) : "";
+                        if (m.message && m.message.length > 100) { preview += "..."; }
+                        html += "<div class=\"message-card\">"
+                            + "<div class=\"message-avatar\">" + m.name.charAt(0).toUpperCase() + "</div>"
+                            + "<div class=\"message-content\">"
+                            + "<div class=\"message-header\"><h4>" + m.name + "</h4><span class=\"message-time\">" + timeAgo(m.created_at) + "</span></div>"
+                            + "<p class=\"message-email\"><i class=\"fas fa-envelope\"></i> " + m.email + "</p>"
+                            + "<p class=\"message-text\">" + preview + "</p>"
+                            + "</div>"
+                            + "<div class=\"message-actions\">"
+                            + "<button class=\"action-btn edit-btn\" onclick=\"viewMessage(" + m.id + ")\"><i class=\"fas fa-eye\"></i></button>"
+                            + "<a href=\"mailto:" + m.email + "\" class=\"action-btn success-btn\"><i class=\"fas fa-reply\"></i></a>"
+                            + "<button class=\"action-btn delete-btn\" onclick=\"deleteMsg(" + m.id + ")\"><i class=\"fas fa-trash\"></i></button>"
+                            + "</div></div>";
+                    }
+                    container.innerHTML = html;
+                    var totalPages = Math.ceil(count / MSG_PER_PAGE);
+                    renderAdminPagination("messagesPagination", page, totalPages, loadMessages);
+                });
+            }
+
+            loadMessages(1);
         });
-
-        var searchTimer = null;
-        document.getElementById("searchMessages").addEventListener("input", function() {
-            clearTimeout(searchTimer);
-            searchTimer = setTimeout(function() { loadMessages(1); }, 400);
-        });
-
-        window.viewMessage = function(id) {
-            adminQuery("contact_messages", { filters: ["id=eq." + id] }).then(function(r) {
-                if (!r.data || r.data.length === 0) { return; }
-                var m = r.data[0];
-                var phoneRow = m.phone ? "<div class=\"msg-detail-row\"><label><i class=\"fas fa-phone\"></i> Phone</label><p>" + m.phone + "</p></div>" : "";
-                var waBtn = m.phone ? "<a href=\"https://wa.me/" + m.phone.replace(/[^0-9]/g, "") + "\" target=\"_blank\" class=\"btn-add\" style=\"background:#25D366;color:white;\"><i class=\"fab fa-whatsapp\"></i> WhatsApp</a>" : "";
-                document.getElementById("messageDetails").innerHTML =
-                    "<div class=\"message-detail-card\">"
-                    + "<div class=\"msg-detail-row\"><label><i class=\"fas fa-user\"></i> Name</label><p>" + m.name + "</p></div>"
-                    + "<div class=\"msg-detail-row\"><label><i class=\"fas fa-envelope\"></i> Email</label><p><a href=\"mailto:" + m.email + "\">" + m.email + "</a></p></div>"
-                    + phoneRow
-                    + "<div class=\"msg-detail-row\"><label><i class=\"fas fa-calendar\"></i> Date</label><p>" + new Date(m.created_at).toLocaleString() + "</p></div>"
-                    + "<div class=\"msg-detail-row\"><label><i class=\"fas fa-comment-dots\"></i> Message</label><div class=\"msg-full-text\">" + m.message + "</div></div>"
-                    + "<div class=\"msg-detail-actions\">"
-                    + "<a href=\"mailto:" + m.email + "\" class=\"btn-save\"><i class=\"fas fa-reply\"></i> Reply Email</a>"
-                    + waBtn + "</div></div>";
-                document.getElementById("viewMessageModal").classList.add("active");
-            });
-        };
-
-        window.deleteMsg = function(id) {
-            deleteMsgId = id;
-            document.getElementById("deleteMsgModal").classList.add("active");
-        };
-
-        function loadMessages(page) {
-            if (!page) { page = 1; }
-            msgPage = page;
-            var container = document.getElementById("messagesList");
-            container.innerHTML = "<div class=\"loading-spinner\"><i class=\"fas fa-spinner fa-spin\"></i> Loading...</div>";
-            var offset = (page - 1) * MSG_PER_PAGE;
-
-            adminQuery("contact_messages", {
-                order: "created_at.desc",
-                limit: MSG_PER_PAGE,
-                offset: offset,
-                count: true
-            }).then(function(result) {
-                var data = result.data;
-                var count = result.count || 0;
-                document.getElementById("messagesCount").textContent = count + " total messages";
-                if (!data || data.length === 0) {
-                    container.innerHTML = "<div class=\"empty-state\"><i class=\"fas fa-inbox\"></i><h3>No Messages</h3><p>No contact messages yet.</p></div>";
-                    document.getElementById("messagesPagination").innerHTML = "";
-                    return;
-                }
-                var html = "";
-                for (var i = 0; i < data.length; i++) {
-                    var m = data[i];
-                    var firstChar = m.name ? m.name.charAt(0).toUpperCase() : "?";
-                    var preview = m.message ? m.message.substring(0, 100) : "";
-                    if (m.message && m.message.length > 100) { preview += "..."; }
-                    html += "<div class=\"message-card\">"
-                        + "<div class=\"message-avatar\">" + firstChar + "</div>"
-                        + "<div class=\"message-content\">"
-                        + "<div class=\"message-header\"><h4>" + m.name + "</h4><span class=\"message-time\">" + timeAgo(m.created_at) + "</span></div>"
-                        + "<p class=\"message-email\"><i class=\"fas fa-envelope\"></i> " + m.email + "</p>"
-                        + "<p class=\"message-text\">" + preview + "</p>"
-                        + "</div>"
-                        + "<div class=\"message-actions\">"
-                        + "<button class=\"action-btn edit-btn\" onclick=\"viewMessage(" + m.id + ")\" title=\"View\"><i class=\"fas fa-eye\"></i></button>"
-                        + "<a href=\"mailto:" + m.email + "\" class=\"action-btn success-btn\" title=\"Reply\"><i class=\"fas fa-reply\"></i></a>"
-                        + "<button class=\"action-btn delete-btn\" onclick=\"deleteMsg(" + m.id + ")\" title=\"Delete\"><i class=\"fas fa-trash\"></i></button>"
-                        + "</div></div>";
-                }
-                container.innerHTML = html;
-                var totalPages = Math.ceil(count / MSG_PER_PAGE);
-                renderAdminPagination("messagesPagination", page, totalPages, loadMessages);
-            });
-        }
-
-        loadMessages(1);
-    });
-</script>
+    </script>
+</body>
+</html>
 </body>
 </html>

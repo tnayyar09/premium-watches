@@ -66,81 +66,63 @@
     </div>
 </div>
 
-<script src="js/admin.js"></script>
-<script src="js/auth.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-
-        if (sessionStorage.getItem("adminLoggedIn") === "true") {
-            window.location.href = "dashboard.html";
-            return;
-        }
-
-        var toggleBtn = document.getElementById("togglePass");
-        if (toggleBtn) {
-            toggleBtn.addEventListener("click", function() {
-                var inp = document.getElementById("loginPassword");
-                var ico = this.querySelector("i");
-                if (inp.type === "password") {
-                    inp.type = "text";
-                    ico.className = "fas fa-eye-slash";
-                } else {
-                    inp.type = "password";
-                    ico.className = "fas fa-eye";
-                }
-            });
-        }
-
-        var loginForm = document.getElementById("loginForm");
-        if (loginForm) {
-            loginForm.addEventListener("submit", function(e) {
-                e.preventDefault();
-                var username = document.getElementById("loginUsername").value.trim();
-                var password = document.getElementById("loginPassword").value;
-                var errorEl = document.getElementById("loginError");
-                var errorText = document.getElementById("loginErrorText");
-                var successEl = document.getElementById("loginSuccess");
-                var btn = document.getElementById("loginBtn");
-                var btnText = btn.querySelector(".btn-text");
-                var btnLoading = btn.querySelector(".btn-loading");
-
-                errorEl.style.display = "none";
-                successEl.style.display = "none";
-
-                if (!username || !password) {
-                    errorText.textContent = "Please enter username and password";
-                    errorEl.style.display = "flex";
-                    return;
-                }
-
-                btnText.style.display = "none";
-                btnLoading.style.display = "inline-flex";
-                btn.disabled = true;
-
-                loginUser(username, password).then(function(result) {
-                    if (result.success) {
-                        successEl.style.display = "flex";
-                        setTimeout(function() {
-                            window.location.href = "dashboard.html";
-                        }, 800);
-                    } else {
-                        errorText.textContent = result.error || "Invalid credentials";
-                        errorEl.style.display = "flex";
-                        btnText.style.display = "inline-flex";
-                        btnLoading.style.display = "none";
-                        btn.disabled = false;
-                    }
-                }).catch(function(err) {
-                    console.error(err);
-                    errorText.textContent = "Connection error!";
-                    errorEl.style.display = "flex";
-                    btnText.style.display = "inline-flex";
-                    btnLoading.style.display = "none";
-                    btn.disabled = false;
+    <script src="../js/config.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (sessionStorage.getItem("adminLoggedIn") === "true") {
+                window.location.href = "dashboard.html";
+                return;
+            }
+            var toggleBtn = document.getElementById("togglePass");
+            if (toggleBtn) {
+                toggleBtn.addEventListener("click", function() {
+                    var inp = document.getElementById("loginPassword");
+                    var ico = this.querySelector("i");
+                    if (inp.type === "password") { inp.type = "text"; ico.className = "fas fa-eye-slash"; }
+                    else { inp.type = "password"; ico.className = "fas fa-eye"; }
                 });
-            });
-        }
-    });
-</script>
+            }
+            var loginForm = document.getElementById("loginForm");
+            if (loginForm) {
+                loginForm.addEventListener("submit", function(e) {
+                    e.preventDefault();
+                    var username = document.getElementById("loginUsername").value.trim();
+                    var password = document.getElementById("loginPassword").value;
+                    var errorEl = document.getElementById("loginError");
+                    var errorText = document.getElementById("loginErrorText");
+                    var successEl = document.getElementById("loginSuccess");
+                    var btn = document.getElementById("loginBtn");
+                    var btnText = btn.querySelector(".btn-text");
+                    var btnLoading = btn.querySelector(".btn-loading");
+                    errorEl.style.display = "none";
+                    if (successEl) { successEl.style.display = "none"; }
+                    if (!username || !password) {
+                        errorText.textContent = "Please enter username and password";
+                        errorEl.style.display = "flex";
+                        return;
+                    }
+                    btnText.style.display = "none";
+                    btnLoading.style.display = "inline-flex";
+                    btn.disabled = true;
+                    loginUser(username, password).then(function(result) {
+                        if (result.success) {
+                            if (successEl) { successEl.style.display = "flex"; }
+                            setTimeout(function() { window.location.href = "dashboard.html"; }, 800);
+                        } else {
+                            errorText.textContent = result.error || "Invalid credentials";
+                            errorEl.style.display = "flex";
+                            btnText.style.display = "inline-flex";
+                            btnLoading.style.display = "none";
+                            btn.disabled = false;
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
 </body>
 </html>

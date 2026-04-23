@@ -47,7 +47,7 @@
                 <li><a href="contact.html">Contact Us</a></li>
             </ul>
             <div class="nav-actions">
-                <a href="https://wa.me/919876543210" class="nav-whatsapp" target="_blank"><i class="fab fa-whatsapp"></i> Chat</a>
+                <a href="https://wa.me/917888525380" class="nav-whatsapp" target="_blank"><i class="fab fa-whatsapp"></i> Chat</a>
                 <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
             </div>
         </div>
@@ -169,32 +169,40 @@
         </div>
     </footer>
 
-    <a href="https://wa.me/919876543210" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i><span class="pulse-ring"></span></a>
-    <button class="scroll-top" id="scrollTop"><i class="fas fa-chevron-up"></i></button>
+    <a href="https://wa.me/917888525380" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+        <span class="pulse-ring"></span>
+    </a>
+    <button class="scroll-top" id="scrollTop">
+        <i class="fas fa-chevron-up"></i>
+    </button>
 
+    <script src="js/config.js"></script>
+    <script src="js/security.js"></script>
     <script src="js/app.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Animate stats
-            const statNumbers = document.querySelectorAll('.stat-number');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if(entry.isIntersecting) {
-                        const el = entry.target;
-                        const target = parseInt(el.dataset.count);
-                        let current = 0;
-                        const increment = target / 60;
-                        const timer = setInterval(() => {
+        document.addEventListener("DOMContentLoaded", function() {
+            var statNumbers = document.querySelectorAll(".stat-number");
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        var el = entry.target;
+                        var target = parseInt(el.dataset.count);
+                        var current = 0;
+                        var increment = target / 60;
+                        var timer = setInterval(function() {
                             current += increment;
-                            if(current >= target) { current = target; clearInterval(timer); }
+                            if (current >= target) { current = target; clearInterval(timer); }
                             el.textContent = Math.floor(current);
                         }, 30);
                         observer.unobserve(el);
                     }
                 });
             }, { threshold: 0.5 });
-            statNumbers.forEach(n => observer.observe(n));
+            statNumbers.forEach(function(n) { observer.observe(n); });
         });
     </script>
+</body>
+</html>
 </body>
 </html>

@@ -177,192 +177,176 @@
 
 <div class="toast-container" id="toastContainer"></div>
 
-<script src="js/admin.js"></script>
-<script src="js/auth.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        checkAuth();
+    <script src="../js/config.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            checkAuth();
 
-        var productPage = 1;
-        var PRODUCTS_PER_PAGE = 8;
-        var deleteProductId = null;
+            var productPage = 1;
+            var PRODUCTS_PER_PAGE = 8;
+            var deleteProductId = null;
 
-        // Listeners
-        document.getElementById("addProductBtn").addEventListener("click", function() { openProductModal(null); });
-        document.getElementById("closeModal").addEventListener("click", closeProductModal);
-        document.getElementById("cancelProduct").addEventListener("click", closeProductModal);
-        document.getElementById("productModal").addEventListener("click", function(e) { if (e.target === this) { closeProductModal(); } });
+            document.getElementById("addProductBtn").addEventListener("click", function() { openProductModal(null); });
+            document.getElementById("closeModal").addEventListener("click", closeProductModal);
+            document.getElementById("cancelProduct").addEventListener("click", closeProductModal);
+            document.getElementById("productModal").addEventListener("click", function(e) { if (e.target === this) { closeProductModal(); } });
 
-        document.getElementById("prodFeatured").addEventListener("change", function() {
-            document.getElementById("featuredLabel").textContent = this.checked ? "Yes" : "No";
-        });
-
-        document.getElementById("prodImageUrl").addEventListener("input", function() {
-            var preview = document.getElementById("imagePreview");
-            if (this.value) {
-                preview.innerHTML = "<img src=\"" + this.value + "\" alt=\"Preview\" style=\"width:100%;height:100%;object-fit:cover;\">";
-            } else {
-                preview.innerHTML = "<i class=\"fas fa-image\"></i><span>Image Preview</span>";
-            }
-        });
-
-        var searchTimer = null;
-        document.getElementById("searchProducts").addEventListener("input", function() {
-            clearTimeout(searchTimer);
-            searchTimer = setTimeout(function() { loadProducts(1); }, 400);
-        });
-
-        document.getElementById("filterCategory").addEventListener("change", function() { loadProducts(1); });
-        document.getElementById("filterFeatured").addEventListener("change", function() { loadProducts(1); });
-
-        document.getElementById("cancelDelete").addEventListener("click", function() {
-            document.getElementById("deleteModal").classList.remove("active");
-        });
-
-        document.getElementById("confirmDelete").addEventListener("click", function() {
-            if (!deleteProductId) { return; }
-            adminDelete("products", deleteProductId).then(function(ok) {
-                if (ok) { showToast("Product deleted!", "success"); loadProducts(productPage); }
-                else { showToast("Delete failed!", "error"); }
-                document.getElementById("deleteModal").classList.remove("active");
-                deleteProductId = null;
+            document.getElementById("prodFeatured").addEventListener("change", function() {
+                document.getElementById("featuredLabel").textContent = this.checked ? "Yes" : "No";
             });
-        });
 
-        document.getElementById("productForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-            saveProduct();
-        });
-
-        // Functions
-        function openProductModal(product) {
-            document.getElementById("productForm").reset();
-            document.getElementById("imagePreview").innerHTML = "<i class=\"fas fa-image\"></i><span>Image Preview</span>";
-            document.getElementById("featuredLabel").textContent = "No";
-            if (product) {
-                document.getElementById("modalTitle").innerHTML = "<i class=\"fas fa-edit\"></i> Edit Product";
-                document.getElementById("productId").value = product.id;
-                document.getElementById("prodTitle").value = product.title || "";
-                document.getElementById("prodDescription").value = product.short_description || "";
-                document.getElementById("prodPrice").value = product.price || "";
-                document.getElementById("prodOriginalPrice").value = product.original_price || "";
-                document.getElementById("prodCategory").value = product.category || "";
-                document.getElementById("prodFeatured").checked = product.is_featured ? true : false;
-                document.getElementById("featuredLabel").textContent = product.is_featured ? "Yes" : "No";
-                document.getElementById("prodImageUrl").value = product.image_url || "";
-                if (product.image_url) {
-                    document.getElementById("imagePreview").innerHTML = "<img src=\"" + product.image_url + "\" alt=\"Preview\" style=\"width:100%;height:100%;object-fit:cover;\">";
-                }
-            } else {
-                document.getElementById("modalTitle").innerHTML = "<i class=\"fas fa-plus-circle\"></i> Add New Product";
-                document.getElementById("productId").value = "";
-            }
-            document.getElementById("productModal").classList.add("active");
-        }
-
-        function closeProductModal() {
-            document.getElementById("productModal").classList.remove("active");
-        }
-
-        window.editProduct = function(id) {
-            adminQuery("products", { filters: ["id=eq." + id] }).then(function(r) {
-                if (r.data && r.data.length > 0) { openProductModal(r.data[0]); }
-            });
-        };
-
-        window.deleteProduct = function(id, name) {
-            deleteProductId = id;
-            document.getElementById("deleteItemName").textContent = name;
-            document.getElementById("deleteModal").classList.add("active");
-        };
-
-        function saveProduct() {
-            var btn = document.getElementById("saveProductBtn");
-            var btnText = btn.querySelector(".btn-text");
-            var btnLoading = btn.querySelector(".btn-loading");
-            btnText.style.display = "none";
-            btnLoading.style.display = "inline-flex";
-
-            var id = document.getElementById("productId").value;
-            var customCat = document.getElementById("prodCustomCategory").value.trim();
-            var selectedCat = document.getElementById("prodCategory").value;
-            var body = {
-                title: document.getElementById("prodTitle").value.trim(),
-                short_description: document.getElementById("prodDescription").value.trim(),
-                price: parseFloat(document.getElementById("prodPrice").value),
-                category: customCat ? customCat : selectedCat,
-                is_featured: document.getElementById("prodFeatured").checked,
-                image_url: document.getElementById("prodImageUrl").value.trim()
-            };
-            var origPrice = document.getElementById("prodOriginalPrice").value;
-            body.original_price = origPrice ? parseFloat(origPrice) : null;
-
-            var promise = id ? adminUpdate("products", id, body) : adminInsert("products", body);
-            promise.then(function(ok) {
-                if (ok) {
-                    showToast(id ? "Updated!" : "Product added!", "success");
-                    closeProductModal();
-                    loadProducts(productPage);
+            document.getElementById("prodImageUrl").addEventListener("input", function() {
+                var preview = document.getElementById("imagePreview");
+                if (this.value) {
+                    preview.innerHTML = "<img src=\"" + this.value + "\" alt=\"Preview\" style=\"width:100%;height:100%;object-fit:cover;\">";
                 } else {
-                    showToast("Save failed!", "error");
+                    preview.innerHTML = "<i class=\"fas fa-image\"></i><span>Image Preview</span>";
                 }
-                btnText.style.display = "inline-flex";
-                btnLoading.style.display = "none";
             });
-        }
 
-        function loadProducts(page) {
-            if (!page) { page = 1; }
-            productPage = page;
-            var tbody = document.getElementById("productsTableBody");
-            tbody.innerHTML = "<tr><td colspan=\"7\" class=\"loading-cell\"><i class=\"fas fa-spinner fa-spin\"></i> Loading...</td></tr>";
-
-            var filters = [];
-            var catFilter = document.getElementById("filterCategory").value;
-            var featFilter = document.getElementById("filterFeatured").value;
-            if (catFilter) { filters.push("category=eq." + encodeURIComponent(catFilter)); }
-            if (featFilter) { filters.push("is_featured=eq." + featFilter); }
-
-            var offset = (page - 1) * PRODUCTS_PER_PAGE;
-
-            adminQuery("products", {
-                filters: filters,
-                order: "created_at.desc",
-                limit: PRODUCTS_PER_PAGE,
-                offset: offset,
-                count: true
-            }).then(function(result) {
-                var data = result.data;
-                var count = result.count || 0;
-                if (!data || data.length === 0) {
-                    tbody.innerHTML = "<tr><td colspan=\"7\" class=\"empty-cell\">No products found</td></tr>";
-                    document.getElementById("productsPagination").innerHTML = "";
-                    return;
-                }
-                var html = "";
-                for (var i = 0; i < data.length; i++) {
-                    var p = data[i];
-                    var safeTitle = (p.title || "").replace(/'/g, "\\'");
-                    html += "<tr>"
-                        + "<td><img src=\"" + p.image_url + "\" class=\"table-img\" alt=\"\" onerror=\"this.src='https://via.placeholder.com/60'\"></td>"
-                        + "<td><strong>" + p.title + "</strong></td>"
-                        + "<td><span class=\"badge badge-blue\">" + (p.category || "General") + "</span></td>"
-                        + "<td><strong>Rs." + Number(p.price).toLocaleString("en-IN") + "</strong></td>"
-                        + "<td>" + (p.original_price ? "Rs." + Number(p.original_price).toLocaleString("en-IN") : "-") + "</td>"
-                        + "<td>" + (p.is_featured ? "<span class=\"badge badge-gold\">Yes</span>" : "<span class=\"badge badge-gray\">No</span>") + "</td>"
-                        + "<td><div class=\"action-btns\">"
-                        + "<button class=\"action-btn edit-btn\" onclick=\"editProduct(" + p.id + ")\" title=\"Edit\"><i class=\"fas fa-edit\"></i></button>"
-                        + "<button class=\"action-btn delete-btn\" onclick=\"deleteProduct(" + p.id + ", '" + safeTitle + "')\" title=\"Delete\"><i class=\"fas fa-trash\"></i></button>"
-                        + "</div></td></tr>";
-                }
-                tbody.innerHTML = html;
-                var totalPages = Math.ceil(count / PRODUCTS_PER_PAGE);
-                renderAdminPagination("productsPagination", page, totalPages, loadProducts);
+            var searchTimer = null;
+            document.getElementById("searchProducts").addEventListener("input", function() {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(function() { loadProducts(1); }, 400);
             });
-        }
+            document.getElementById("filterCategory").addEventListener("change", function() { loadProducts(1); });
+            document.getElementById("filterFeatured").addEventListener("change", function() { loadProducts(1); });
 
-        loadProducts(1);
-    });
-</script>
+            document.getElementById("cancelDelete").addEventListener("click", function() {
+                document.getElementById("deleteModal").classList.remove("active");
+            });
+
+            document.getElementById("confirmDelete").addEventListener("click", function() {
+                if (!deleteProductId) { return; }
+                adminDelete("products", deleteProductId).then(function(ok) {
+                    if (ok) { showToast("Deleted!", "success"); loadProducts(productPage); }
+                    else { showToast("Failed!", "error"); }
+                    document.getElementById("deleteModal").classList.remove("active");
+                    deleteProductId = null;
+                });
+            });
+
+            document.getElementById("productForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                saveProduct();
+            });
+
+            function openProductModal(product) {
+                document.getElementById("productForm").reset();
+                document.getElementById("imagePreview").innerHTML = "<i class=\"fas fa-image\"></i><span>Image Preview</span>";
+                document.getElementById("featuredLabel").textContent = "No";
+                if (product) {
+                    document.getElementById("modalTitle").innerHTML = "<i class=\"fas fa-edit\"></i> Edit Product";
+                    document.getElementById("productId").value = product.id;
+                    document.getElementById("prodTitle").value = product.title || "";
+                    document.getElementById("prodDescription").value = product.short_description || "";
+                    document.getElementById("prodPrice").value = product.price || "";
+                    document.getElementById("prodOriginalPrice").value = product.original_price || "";
+                    document.getElementById("prodCategory").value = product.category || "";
+                    document.getElementById("prodFeatured").checked = product.is_featured ? true : false;
+                    document.getElementById("featuredLabel").textContent = product.is_featured ? "Yes" : "No";
+                    document.getElementById("prodImageUrl").value = product.image_url || "";
+                    if (product.image_url) {
+                        document.getElementById("imagePreview").innerHTML = "<img src=\"" + product.image_url + "\" alt=\"Preview\" style=\"width:100%;height:100%;object-fit:cover;\">";
+                    }
+                } else {
+                    document.getElementById("modalTitle").innerHTML = "<i class=\"fas fa-plus-circle\"></i> Add New Product";
+                    document.getElementById("productId").value = "";
+                }
+                document.getElementById("productModal").classList.add("active");
+            }
+
+            function closeProductModal() {
+                document.getElementById("productModal").classList.remove("active");
+            }
+
+            window.editProduct = function(id) {
+                adminQuery("products", { filters: ["id=eq." + id] }).then(function(r) {
+                    if (r.data && r.data.length > 0) { openProductModal(r.data[0]); }
+                });
+            };
+
+            window.deleteProduct = function(id, name) {
+                deleteProductId = id;
+                document.getElementById("deleteItemName").textContent = name;
+                document.getElementById("deleteModal").classList.add("active");
+            };
+
+            function saveProduct() {
+                var btn = document.getElementById("saveProductBtn");
+                var btnText = btn.querySelector(".btn-text");
+                var btnLoading = btn.querySelector(".btn-loading");
+                btnText.style.display = "none";
+                btnLoading.style.display = "inline-flex";
+                var id = document.getElementById("productId").value;
+                var customCat = document.getElementById("prodCustomCategory").value.trim();
+                var body = {
+                    title: document.getElementById("prodTitle").value.trim(),
+                    short_description: document.getElementById("prodDescription").value.trim(),
+                    price: parseFloat(document.getElementById("prodPrice").value),
+                    category: customCat || document.getElementById("prodCategory").value,
+                    is_featured: document.getElementById("prodFeatured").checked,
+                    image_url: document.getElementById("prodImageUrl").value.trim()
+                };
+                var op = document.getElementById("prodOriginalPrice").value;
+                body.original_price = op ? parseFloat(op) : null;
+                var promise = id ? adminUpdate("products", id, body) : adminInsert("products", body);
+                promise.then(function(ok) {
+                    if (ok) { showToast(id ? "Updated!" : "Added!", "success"); closeProductModal(); loadProducts(productPage); }
+                    else { showToast("Failed!", "error"); }
+                    btnText.style.display = "inline-flex";
+                    btnLoading.style.display = "none";
+                });
+            }
+
+            function loadProducts(page) {
+                if (!page) { page = 1; }
+                productPage = page;
+                var tbody = document.getElementById("productsTableBody");
+                tbody.innerHTML = "<tr><td colspan=\"7\" class=\"loading-cell\"><i class=\"fas fa-spinner fa-spin\"></i> Loading...</td></tr>";
+                var filters = [];
+                var catFilter = document.getElementById("filterCategory").value;
+                var featFilter = document.getElementById("filterFeatured").value;
+                if (catFilter) { filters.push("category=eq." + encodeURIComponent(catFilter)); }
+                if (featFilter) { filters.push("is_featured=eq." + featFilter); }
+                var offset = (page - 1) * PRODUCTS_PER_PAGE;
+                adminQuery("products", { filters: filters, order: "created_at.desc", limit: PRODUCTS_PER_PAGE, offset: offset, count: true })
+                .then(function(result) {
+                    var data = result.data;
+                    var count = result.count || 0;
+                    if (!data || data.length === 0) {
+                        tbody.innerHTML = "<tr><td colspan=\"7\" class=\"empty-cell\">No products found</td></tr>";
+                        document.getElementById("productsPagination").innerHTML = "";
+                        return;
+                    }
+                    var html = "";
+                    for (var i = 0; i < data.length; i++) {
+                        var p = data[i];
+                        var safeTitle = (p.title || "").replace(/'/g, "\\'");
+                        html += "<tr>"
+                            + "<td><img src=\"" + p.image_url + "\" class=\"table-img\" alt=\"\" onerror=\"this.src='https://via.placeholder.com/60'\"></td>"
+                            + "<td><strong>" + p.title + "</strong></td>"
+                            + "<td><span class=\"badge badge-blue\">" + (p.category || "General") + "</span></td>"
+                            + "<td><strong>Rs." + Number(p.price).toLocaleString("en-IN") + "</strong></td>"
+                            + "<td>" + (p.original_price ? "Rs." + Number(p.original_price).toLocaleString("en-IN") : "-") + "</td>"
+                            + "<td>" + (p.is_featured ? "<span class=\"badge badge-gold\">Yes</span>" : "<span class=\"badge badge-gray\">No</span>") + "</td>"
+                            + "<td><div class=\"action-btns\">"
+                            + "<button class=\"action-btn edit-btn\" onclick=\"editProduct(" + p.id + ")\" title=\"Edit\"><i class=\"fas fa-edit\"></i></button>"
+                            + "<button class=\"action-btn delete-btn\" onclick=\"deleteProduct(" + p.id + ", '" + safeTitle + "')\" title=\"Delete\"><i class=\"fas fa-trash\"></i></button>"
+                            + "</div></td></tr>";
+                    }
+                    tbody.innerHTML = html;
+                    var totalPages = Math.ceil(count / PRODUCTS_PER_PAGE);
+                    renderAdminPagination("productsPagination", page, totalPages, loadProducts);
+                });
+            }
+
+            loadProducts(1);
+        });
+    </script>
+</body>
+</html>
 </body>
 </html>

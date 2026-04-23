@@ -102,74 +102,77 @@
 
 <div class="toast-container" id="toastContainer"></div>
 
-<script src="js/admin.js"></script>
-<script src="js/auth.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        checkAuth();
+    <script src="../js/config.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            checkAuth();
 
-        function animateNumber(id, target) {
-            var el = document.getElementById(id);
-            if (!el) { return; }
-            var t = target || 0;
-            if (t === 0) { el.textContent = "0"; return; }
-            var current = 0;
-            var step = Math.max(1, Math.ceil(t / 40));
-            var timer = setInterval(function() {
-                current += step;
-                if (current >= t) { current = t; clearInterval(timer); }
-                el.textContent = current;
-            }, 40);
-        }
-
-        adminQuery("products", { select: "id", count: true, limit: 0 })
-        .then(function(r) { animateNumber("totalProducts", r.count || 0); });
-
-        adminQuery("products", { select: "id", count: true, limit: 0, filters: ["is_featured=eq.true"] })
-        .then(function(r) { animateNumber("featuredProducts", r.count || 0); });
-
-        adminQuery("banners", { select: "id", count: true, limit: 0, filters: ["is_active=eq.true"] })
-        .then(function(r) { animateNumber("activeBanners", r.count || 0); });
-
-        adminQuery("contact_messages", { select: "id", count: true, limit: 0 })
-        .then(function(r) { animateNumber("totalMessages", r.count || 0); });
-
-        adminQuery("products", { order: "created_at.desc", limit: 5 })
-        .then(function(result) {
-            var el = document.getElementById("recentProducts");
-            var items = result.data;
-            if (!items || items.length === 0) { el.innerHTML = "<p class=\"empty-text\">No products yet</p>"; return; }
-            var html = "";
-            for (var i = 0; i < items.length; i++) {
-                var p = items[i];
-                html += "<div class=\"recent-item\">"
-                    + "<img src=\"" + p.image_url + "\" class=\"recent-img\" alt=\"\" onerror=\"this.src='https://via.placeholder.com/50'\">"
-                    + "<div class=\"recent-info\"><h4>" + p.title + "</h4>"
-                    + "<span class=\"recent-meta\">Rs." + Number(p.price).toLocaleString("en-IN") + "</span></div>"
-                    + (p.is_featured ? "<span class=\"badge badge-gold\">Featured</span>" : "<span class=\"badge badge-gray\">Regular</span>")
-                    + "</div>";
+            function animateNumber(id, target) {
+                var el = document.getElementById(id);
+                if (!el) { return; }
+                var t = target || 0;
+                if (t === 0) { el.textContent = "0"; return; }
+                var current = 0;
+                var step = Math.max(1, Math.ceil(t / 40));
+                var timer = setInterval(function() {
+                    current += step;
+                    if (current >= t) { current = t; clearInterval(timer); }
+                    el.textContent = current;
+                }, 40);
             }
-            el.innerHTML = html;
-        });
 
-        adminQuery("contact_messages", { order: "created_at.desc", limit: 5 })
-        .then(function(result) {
-            var el = document.getElementById("recentMessages");
-            var items = result.data;
-            if (!items || items.length === 0) { el.innerHTML = "<p class=\"empty-text\">No messages yet</p>"; return; }
-            var html = "";
-            for (var i = 0; i < items.length; i++) {
-                var m = items[i];
-                html += "<div class=\"recent-item\">"
-                    + "<div class=\"recent-avatar\">" + m.name.charAt(0).toUpperCase() + "</div>"
-                    + "<div class=\"recent-info\"><h4>" + m.name + "</h4>"
-                    + "<span class=\"recent-meta\">" + m.email + "</span></div>"
-                    + "<span class=\"recent-time\">" + timeAgo(m.created_at) + "</span>"
-                    + "</div>";
-            }
-            el.innerHTML = html;
+            adminQuery("products", { select: "id", count: true, limit: 0 })
+            .then(function(r) { animateNumber("totalProducts", r.count || 0); });
+
+            adminQuery("products", { select: "id", count: true, limit: 0, filters: ["is_featured=eq.true"] })
+            .then(function(r) { animateNumber("featuredProducts", r.count || 0); });
+
+            adminQuery("banners", { select: "id", count: true, limit: 0, filters: ["is_active=eq.true"] })
+            .then(function(r) { animateNumber("activeBanners", r.count || 0); });
+
+            adminQuery("contact_messages", { select: "id", count: true, limit: 0 })
+            .then(function(r) { animateNumber("totalMessages", r.count || 0); });
+
+            adminQuery("products", { order: "created_at.desc", limit: 5 })
+            .then(function(result) {
+                var el = document.getElementById("recentProducts");
+                var items = result.data;
+                if (!items || items.length === 0) { el.innerHTML = "<p class=\"empty-text\">No products yet</p>"; return; }
+                var html = "";
+                for (var i = 0; i < items.length; i++) {
+                    var p = items[i];
+                    html += "<div class=\"recent-item\">"
+                        + "<img src=\"" + p.image_url + "\" class=\"recent-img\" alt=\"\" onerror=\"this.src='https://via.placeholder.com/50'\">"
+                        + "<div class=\"recent-info\"><h4>" + p.title + "</h4>"
+                        + "<span class=\"recent-meta\">Rs." + Number(p.price).toLocaleString("en-IN") + "</span></div>"
+                        + (p.is_featured ? "<span class=\"badge badge-gold\">Featured</span>" : "<span class=\"badge badge-gray\">Regular</span>")
+                        + "</div>";
+                }
+                el.innerHTML = html;
+            });
+
+            adminQuery("contact_messages", { order: "created_at.desc", limit: 5 })
+            .then(function(result) {
+                var el = document.getElementById("recentMessages");
+                var items = result.data;
+                if (!items || items.length === 0) { el.innerHTML = "<p class=\"empty-text\">No messages yet</p>"; return; }
+                var html = "";
+                for (var i = 0; i < items.length; i++) {
+                    var m = items[i];
+                    html += "<div class=\"recent-item\">"
+                        + "<div class=\"recent-avatar\">" + m.name.charAt(0).toUpperCase() + "</div>"
+                        + "<div class=\"recent-info\"><h4>" + m.name + "</h4>"
+                        + "<span class=\"recent-meta\">" + m.email + "</span></div>"
+                        + "<span class=\"recent-time\">" + timeAgo(m.created_at) + "</span>"
+                        + "</div>";
+                }
+                el.innerHTML = html;
+            });
         });
-    });
-</script>
+    </script>
+</body>
+</html>
 </body>
 </html>
