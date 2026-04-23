@@ -18,9 +18,6 @@
         return false;
     });
 
-    console.log("%cSTOP!", "color:red;font-size:50px;font-weight:bold;");
-    console.log("%cThis is a browser feature intended for developers only.", "font-size:14px;color:#333;");
-
     window.addEventListener("load", function() {
         var images = document.querySelectorAll("img");
         for (var i = 0; i < images.length; i++) {
@@ -28,4 +25,13 @@
             images[i].style.pointerEvents = "none";
         }
     });
+
+    console.log(
+        "%cSTOP!",
+        "color:red;font-size:50px;font-weight:bold;"
+    );
+    console.log(
+        "%cThis is a browser feature intended for developers only.",
+        "font-size:14px;color:#333;"
+    );
 })();
