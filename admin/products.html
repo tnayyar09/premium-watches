@@ -262,9 +262,6 @@
         var selectedImageFile = null;
         var currentImageSource = "url";
 
-        // ========================================
-        // IMAGE SOURCE TOGGLE
-        // ========================================
         var urlSourceBtn    = document.getElementById("urlSourceBtn");
         var uploadSourceBtn = document.getElementById("uploadSourceBtn");
         var urlPanel        = document.getElementById("urlPanel");
@@ -286,9 +283,6 @@
             urlPanel.style.display    = "none";
         });
 
-        // ========================================
-        // FILE INPUT / DRAG & DROP
-        // ========================================
         var fileInput = document.getElementById("fileInput");
         var dropZone  = document.getElementById("dropZone");
 
@@ -296,7 +290,6 @@
             fileInput.click();
         });
 
-        // Drag events
         dropZone.addEventListener("dragover", function(e) {
             e.preventDefault();
             dropZone.classList.add("drag-over");
@@ -321,29 +314,21 @@
         });
 
         function handleFileSelect(file) {
-            // Validate file type
             var allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
             if (allowedTypes.indexOf(file.type) === -1) {
                 showToast("Only JPG, PNG, WebP, GIF allowed!", "error");
                 return;
             }
-
-            // Validate file size (5MB max)
             if (file.size > 5 * 1024 * 1024) {
                 showToast("File size must be under 5MB!", "error");
                 return;
             }
-
             selectedImageFile = file;
-
-            // Show selected file info
             var selectedFileEl = document.getElementById("selectedFile");
             document.getElementById("selectedFileName").textContent = file.name;
             document.getElementById("selectedFileSize").textContent =
                 (file.size / (1024 * 1024)).toFixed(2) + " MB";
             selectedFileEl.style.display = "flex";
-
-            // Show preview
             var reader = new FileReader();
             reader.onload = function(e) {
                 document.getElementById("imagePreview").innerHTML =
@@ -353,7 +338,6 @@
             reader.readAsDataURL(file);
         }
 
-        // Remove file button
         document.getElementById("removeFileBtn").addEventListener("click", function() {
             selectedImageFile = null;
             fileInput.value   = "";
@@ -362,32 +346,23 @@
                 "<i class=\"fas fa-image\"></i><span>Image Preview</span>";
         });
 
-        // ========================================
-        // UPLOAD TO SUPABASE STORAGE
-        // ========================================
         function uploadImageToSupabase(file) {
             return new Promise(function(resolve, reject) {
-                // Generate unique filename
                 var timestamp = Date.now();
                 var random    = Math.random().toString(36).substring(2, 8);
                 var ext       = file.name.split(".").pop().toLowerCase();
                 var fileName  = "product_" + timestamp + "_" + random + "." + ext;
-
                 var progressEl   = document.getElementById("uploadProgress");
                 var progressFill = document.getElementById("progressFill");
                 var progressText = document.getElementById("progressText");
-
                 progressEl.style.display = "block";
                 progressFill.style.width = "20%";
                 progressText.textContent = "Uploading... 20%";
-
                 var uploadUrl = SUPABASE_URL
                     + "/storage/v1/object/product-images/"
                     + fileName;
-
                 progressFill.style.width = "50%";
                 progressText.textContent = "Uploading... 50%";
-
                 fetch(uploadUrl, {
                     method: "POST",
                     headers: {
@@ -401,27 +376,21 @@
                 .then(function(res) {
                     progressFill.style.width = "80%";
                     progressText.textContent = "Processing... 80%";
-
                     if (!res.ok) {
                         return res.text().then(function(t) {
                             console.error("Upload error:", t);
                             reject("Upload failed: " + t);
                         });
                     }
-
                     return res.json().then(function(data) {
                         progressFill.style.width = "100%";
                         progressText.textContent = "Complete! 100%";
-
-                        // Build public URL
                         var publicUrl = SUPABASE_URL
                             + "/storage/v1/object/public/product-images/"
                             + fileName;
-
                         setTimeout(function() {
                             progressEl.style.display = "none";
                         }, 1000);
-
                         resolve(publicUrl);
                     });
                 })
@@ -433,23 +402,18 @@
             });
         }
 
-        // ========================================
-        // EXISTING LISTENERS (same as before)
-        // ========================================
         document.getElementById("addProductBtn").addEventListener("click", function() {
             openProductModal(null);
         });
         document.getElementById("closeModal").addEventListener("click", closeProductModal);
         document.getElementById("cancelProduct").addEventListener("click", closeProductModal);
-        //document.getElementById("productModal").addEventListener("click", function(e) {
-        //    if (e.target === this) { closeProductModal(); }
-       // });
+
+        /* ❌ YEH LINE HATA DI - Ab bahar click pe form close NAHI hoga */
 
         document.getElementById("prodFeatured").addEventListener("change", function() {
             document.getElementById("featuredLabel").textContent = this.checked ? "Yes" : "No";
         });
 
-        // URL input preview
         document.getElementById("prodImageUrl").addEventListener("input", function() {
             var preview = document.getElementById("imagePreview");
             if (this.value) {
@@ -488,9 +452,6 @@
             });
         });
 
-        // ========================================
-        // FORM SUBMIT - UPDATED WITH UPLOAD
-        // ========================================
         document.getElementById("productForm").addEventListener("submit", function(e) {
             e.preventDefault();
             saveProduct();
@@ -501,8 +462,6 @@
             document.getElementById("imagePreview").innerHTML =
                 "<i class=\"fas fa-image\"></i><span>Image Preview</span>";
             document.getElementById("featuredLabel").textContent = "No";
-
-            // Reset image upload
             selectedImageFile = null;
             currentImageSource = "url";
             document.getElementById("selectedFile").style.display    = "none";
@@ -512,7 +471,6 @@
             urlPanel.style.display    = "block";
             uploadPanel.style.display = "none";
             fileInput.value = "";
-
             if (product) {
                 document.getElementById("modalTitle").innerHTML =
                     "<i class=\"fas fa-edit\"></i> Edit Product";
@@ -536,7 +494,6 @@
                     "<i class=\"fas fa-plus-circle\"></i> Add New Product";
                 document.getElementById("productId").value = "";
             }
-
             document.getElementById("productModal").classList.add("active");
         }
 
@@ -563,10 +520,7 @@
             var btnLoading = btn.querySelector(".btn-loading");
             btnText.style.display    = "none";
             btnLoading.style.display = "inline-flex";
-
-            // Check if file upload needed
             if (currentImageSource === "upload" && selectedImageFile) {
-                // Upload file first, then save product
                 uploadImageToSupabase(selectedImageFile)
                 .then(function(imageUrl) {
                     saveProductToDatabase(imageUrl, btn, btnText, btnLoading);
@@ -577,7 +531,6 @@
                     btnLoading.style.display = "none";
                 });
             } else {
-                // URL mode - direct save
                 var imageUrl = document.getElementById("prodImageUrl").value.trim();
                 if (!imageUrl) {
                     showToast("Please enter image URL or upload a file!", "error");
@@ -602,11 +555,9 @@
             };
             var op = document.getElementById("prodOriginalPrice").value;
             body.original_price = op ? parseFloat(op) : null;
-
             var promise = id
                 ? adminUpdate("products", id, body)
                 : adminInsert("products", body);
-
             promise.then(function(ok) {
                 if (ok) {
                     showToast(id ? "Updated!" : "Product added!", "success");
@@ -620,9 +571,6 @@
             });
         }
 
-        // ========================================
-        // LOAD PRODUCTS (same as before)
-        // ========================================
         function loadProducts(page) {
             if (!page) { page = 1; }
             productPage = page;
@@ -631,15 +579,12 @@
                 "<tr><td colspan=\"7\" class=\"loading-cell\">"
                 + "<i class=\"fas fa-spinner fa-spin\"></i> Loading..."
                 + "</td></tr>";
-
             var filters = [];
             var catFilter  = document.getElementById("filterCategory").value;
             var featFilter = document.getElementById("filterFeatured").value;
             if (catFilter)  { filters.push("category=eq." + encodeURIComponent(catFilter)); }
             if (featFilter) { filters.push("is_featured=eq." + featFilter); }
-
             var offset = (page - 1) * PRODUCTS_PER_PAGE;
-
             adminQuery("products", {
                 filters: filters,
                 order:   "created_at.desc",
