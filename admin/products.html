@@ -441,9 +441,9 @@
         });
         document.getElementById("closeModal").addEventListener("click", closeProductModal);
         document.getElementById("cancelProduct").addEventListener("click", closeProductModal);
-        document.getElementById("productModal").addEventListener("click", function(e) {
-            if (e.target === this) { closeProductModal(); }
-        });
+        //document.getElementById("productModal").addEventListener("click", function(e) {
+        //    if (e.target === this) { closeProductModal(); }
+       // });
 
         document.getElementById("prodFeatured").addEventListener("change", function() {
             document.getElementById("featuredLabel").textContent = this.checked ? "Yes" : "No";
