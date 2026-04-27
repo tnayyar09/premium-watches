@@ -191,6 +191,17 @@ function createProductCard(product) {
         + "<a href=\"" + getWhatsAppUrl(product) + "\" target=\"_blank\""
         + " class=\"btn-whatsapp-buy\">"
         + "<i class=\"fab fa-whatsapp\"></i> Buy Now on WhatsApp</a></div>";
+
+    // Add click event for lightbox
+    var imageDiv = card.querySelector(".product-image");
+    if (imageDiv) {
+        imageDiv.addEventListener("click", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            openLightbox(product);
+        });
+    }
+
     return card;
 }
 
@@ -598,4 +609,325 @@ function initContactForm() {
             if (btn)        { btn.disabled = false; }
         });
     });
+}
+
+
+// ============================================
+// PRODUCT LIGHTBOX SYSTEM
+// ============================================
+
+var lightboxZoomLevel = 1;
+var lightboxIsDragging = false;
+var lightboxDragStart = { x: 0, y: 0 };
+var lightboxImgPos = { x: 0, y: 0 };
+
+function openLightbox(product) {
+    // Remove existing lightbox
+    var existing = document.getElementById("productLightbox");
+    if (existing) { existing.remove(); }
+
+    var discount = 0;
+    var savings = 0;
+    if (product.original_price && product.original_price > product.price) {
+        discount = Math.round(
+            ((product.original_price - product.price) / product.original_price) * 100
+        );
+        savings = product.original_price - product.price;
+    }
+
+    var badgeHtml = "";
+    if (product.is_featured) {
+        badgeHtml += "<span class=\"lb-featured\">&#9733; Featured</span>";
+    }
+    if (discount > 0) {
+        badgeHtml += "<span class=\"lb-discount\">" + discount + "% OFF</span>";
+    }
+
+    var originalPriceHtml = "";
+    if (product.original_price && product.original_price > product.price) {
+        originalPriceHtml = "<span class=\"lightbox-original-price\">Rs."
+            + formatPrice(product.original_price) + "</span>"
+            + "<span class=\"lightbox-discount-tag\">"
+            + discount + "% OFF</span>";
+    }
+
+    var savingsHtml = "";
+    if (savings > 0) {
+        savingsHtml = "<div class=\"lightbox-savings\">"
+            + "<i class=\"fas fa-tag\"></i> You save Rs."
+            + formatPrice(savings) + "</div>";
+    }
+
+    var waUrl = getWhatsAppUrl(product);
+
+    var lightboxHtml = "<div class=\"lightbox-overlay active\" id=\"productLightbox\">"
+        + "<div class=\"lightbox-container\">"
+        + "<button class=\"lightbox-close\" id=\"lightboxClose\">"
+        + "<i class=\"fas fa-times\"></i></button>"
+
+        + "<div class=\"lightbox-image-section\">"
+        + "<div class=\"lightbox-badge\">" + badgeHtml + "</div>"
+        + "<div class=\"lightbox-image-wrap\" id=\"lightboxImageWrap\">"
+        + "<img src=\"" + product.image_url + "\" alt=\""
+        + product.title + "\" id=\"lightboxImg\" draggable=\"false\">"
+        + "</div>"
+        + "<div class=\"lightbox-zoom-controls\">"
+        + "<button class=\"zoom-btn\" id=\"zoomOutBtn\">"
+        + "<i class=\"fas fa-search-minus\"></i></button>"
+        + "<span class=\"zoom-level\" id=\"zoomLevel\">100%</span>"
+        + "<button class=\"zoom-btn\" id=\"zoomInBtn\">"
+        + "<i class=\"fas fa-search-plus\"></i></button>"
+        + "<button class=\"zoom-btn\" id=\"zoomResetBtn\">"
+        + "<i class=\"fas fa-expand\"></i></button>"
+        + "</div>"
+        + "</div>"
+
+        + "<div class=\"lightbox-info-section\">"
+        + "<div class=\"lightbox-category\">"
+        + (product.category || "Collection") + "</div>"
+        + "<h2 class=\"lightbox-title\">" + product.title + "</h2>"
+        + "<p class=\"lightbox-description\">"
+        + (product.short_description || "Premium quality product from our exclusive collection. Contact us for more details.")
+        + "</p>"
+
+        + "<div class=\"lightbox-price-section\">"
+        + "<div class=\"lightbox-price-row\">"
+        + "<span class=\"lightbox-price\">Rs."
+        + formatPrice(product.price) + "</span>"
+        + originalPriceHtml
+        + "</div>"
+        + savingsHtml
+        + "</div>"
+
+        + "<a href=\"" + waUrl + "\" target=\"_blank\""
+        + " class=\"lightbox-whatsapp-btn\">"
+        + "<i class=\"fab fa-whatsapp\"></i> Buy Now on WhatsApp</a>"
+
+        + "<div class=\"zoom-hint\">"
+        + "<i class=\"fas fa-search-plus\"></i>"
+        + "Click image to zoom | Use buttons to control"
+        + "</div>"
+        + "</div>"
+
+        + "</div>"
+        + "</div>";
+
+    document.body.insertAdjacentHTML("beforeend", lightboxHtml);
+    document.body.style.overflow = "hidden";
+
+    // Reset zoom
+    lightboxZoomLevel = 1;
+    lightboxImgPos = { x: 0, y: 0 };
+
+    // Setup event listeners
+    setupLightboxEvents();
+}
+
+function setupLightboxEvents() {
+    var overlay   = document.getElementById("productLightbox");
+    var closeBtn  = document.getElementById("lightboxClose");
+    var imgWrap   = document.getElementById("lightboxImageWrap");
+    var img       = document.getElementById("lightboxImg");
+    var zoomInBtn   = document.getElementById("zoomInBtn");
+    var zoomOutBtn  = document.getElementById("zoomOutBtn");
+    var zoomResetBtn = document.getElementById("zoomResetBtn");
+    var zoomLevelEl  = document.getElementById("zoomLevel");
+
+    // Close lightbox
+    function closeLightbox() {
+        if (overlay) {
+            overlay.classList.remove("active");
+            setTimeout(function() {
+                if (overlay.parentElement) { overlay.remove(); }
+            }, 300);
+        }
+        document.body.style.overflow = "";
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener("click", closeLightbox);
+    }
+
+    // Click overlay to close
+    if (overlay) {
+        overlay.addEventListener("click", function(e) {
+            if (e.target === overlay) { closeLightbox(); }
+        });
+    }
+
+    // ESC key to close
+    var escHandler = function(e) {
+        if (e.keyCode === 27) {
+            closeLightbox();
+            document.removeEventListener("keydown", escHandler);
+        }
+    };
+    document.addEventListener("keydown", escHandler);
+
+    // Zoom functions
+    function updateZoom() {
+        if (img) {
+            img.style.transform = "scale(" + lightboxZoomLevel
+                + ") translate(" + lightboxImgPos.x + "px, "
+                + lightboxImgPos.y + "px)";
+        }
+        if (zoomLevelEl) {
+            zoomLevelEl.textContent = Math.round(lightboxZoomLevel * 100) + "%";
+        }
+        if (imgWrap) {
+            if (lightboxZoomLevel > 1) {
+                imgWrap.classList.add("zoomed");
+            } else {
+                imgWrap.classList.remove("zoomed");
+                lightboxImgPos = { x: 0, y: 0 };
+            }
+        }
+    }
+
+    // Zoom In
+    if (zoomInBtn) {
+        zoomInBtn.addEventListener("click", function(e) {
+            e.stopPropagation();
+            if (lightboxZoomLevel < 3) {
+                lightboxZoomLevel += 0.5;
+                updateZoom();
+            }
+        });
+    }
+
+    // Zoom Out
+    if (zoomOutBtn) {
+        zoomOutBtn.addEventListener("click", function(e) {
+            e.stopPropagation();
+            if (lightboxZoomLevel > 1) {
+                lightboxZoomLevel -= 0.5;
+                if (lightboxZoomLevel < 1) { lightboxZoomLevel = 1; }
+                updateZoom();
+            }
+        });
+    }
+
+    // Reset Zoom
+    if (zoomResetBtn) {
+        zoomResetBtn.addEventListener("click", function(e) {
+            e.stopPropagation();
+            lightboxZoomLevel = 1;
+            lightboxImgPos = { x: 0, y: 0 };
+            updateZoom();
+        });
+    }
+
+    // Click image to toggle zoom
+    if (imgWrap) {
+        imgWrap.addEventListener("click", function(e) {
+            e.stopPropagation();
+            if (lightboxZoomLevel > 1) {
+                lightboxZoomLevel = 1;
+                lightboxImgPos = { x: 0, y: 0 };
+            } else {
+                lightboxZoomLevel = 2;
+            }
+            updateZoom();
+        });
+
+        // Mouse drag when zoomed
+        imgWrap.addEventListener("mousedown", function(e) {
+            if (lightboxZoomLevel > 1) {
+                e.preventDefault();
+                lightboxIsDragging = true;
+                lightboxDragStart.x = e.clientX - lightboxImgPos.x;
+                lightboxDragStart.y = e.clientY - lightboxImgPos.y;
+                imgWrap.classList.add("dragging");
+            }
+        });
+
+        document.addEventListener("mousemove", function(e) {
+            if (lightboxIsDragging && lightboxZoomLevel > 1) {
+                lightboxImgPos.x = e.clientX - lightboxDragStart.x;
+                lightboxImgPos.y = e.clientY - lightboxDragStart.y;
+                if (img) {
+                    img.style.transform = "scale(" + lightboxZoomLevel
+                        + ") translate(" + lightboxImgPos.x + "px, "
+                        + lightboxImgPos.y + "px)";
+                }
+            }
+        });
+
+        document.addEventListener("mouseup", function() {
+            lightboxIsDragging = false;
+            if (imgWrap) { imgWrap.classList.remove("dragging"); }
+        });
+
+        // Touch zoom and drag (mobile)
+        var touchStartDist = 0;
+        var touchStartZoom = 1;
+
+        imgWrap.addEventListener("touchstart", function(e) {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                var dx = e.touches[0].clientX - e.touches[1].clientX;
+                var dy = e.touches[0].clientY - e.touches[1].clientY;
+                touchStartDist = Math.sqrt(dx * dx + dy * dy);
+                touchStartZoom = lightboxZoomLevel;
+            } else if (e.touches.length === 1 && lightboxZoomLevel > 1) {
+                lightboxIsDragging = true;
+                lightboxDragStart.x = e.touches[0].clientX - lightboxImgPos.x;
+                lightboxDragStart.y = e.touches[0].clientY - lightboxImgPos.y;
+            }
+        }, { passive: false });
+
+        imgWrap.addEventListener("touchmove", function(e) {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                var dx = e.touches[0].clientX - e.touches[1].clientX;
+                var dy = e.touches[0].clientY - e.touches[1].clientY;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                var scale = (dist / touchStartDist) * touchStartZoom;
+                lightboxZoomLevel = Math.max(1, Math.min(3, scale));
+                updateZoom();
+            } else if (e.touches.length === 1 && lightboxIsDragging && lightboxZoomLevel > 1) {
+                e.preventDefault();
+                lightboxImgPos.x = e.touches[0].clientX - lightboxDragStart.x;
+                lightboxImgPos.y = e.touches[0].clientY - lightboxDragStart.y;
+                if (img) {
+                    img.style.transform = "scale(" + lightboxZoomLevel
+                        + ") translate(" + lightboxImgPos.x + "px, "
+                        + lightboxImgPos.y + "px)";
+                }
+            }
+        }, { passive: false });
+
+        imgWrap.addEventListener("touchend", function() {
+            lightboxIsDragging = false;
+        });
+
+        // Mouse wheel zoom
+        imgWrap.addEventListener("wheel", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.deltaY < 0) {
+                if (lightboxZoomLevel < 3) {
+                    lightboxZoomLevel += 0.25;
+                }
+            } else {
+                if (lightboxZoomLevel > 1) {
+                    lightboxZoomLevel -= 0.25;
+                    if (lightboxZoomLevel < 1) { lightboxZoomLevel = 1; }
+                }
+            }
+            updateZoom();
+        }, { passive: false });
+    }
+}
+
+// Close lightbox when clicking image in card
+function closeLightbox() {
+    var overlay = document.getElementById("productLightbox");
+    if (overlay) {
+        overlay.classList.remove("active");
+        setTimeout(function() {
+            if (overlay.parentElement) { overlay.remove(); }
+        }, 300);
+    }
+    document.body.style.overflow = "";
 }
