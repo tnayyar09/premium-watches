@@ -162,37 +162,51 @@
                         <input type="url" id="prodImageUrl" placeholder="https://example.com/image.jpg">
                     </div>
 
-                    <!-- Option 2: File Upload -->
-                    <div class="image-source-panel" id="uploadPanel" style="display:none;">
-                        <div class="file-upload-area" id="dropZone">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <p>Drag & Drop image here</p>
-                            <span>or</span>
-                            <label for="fileInput" class="file-browse-btn">
-                                <i class="fas fa-folder-open"></i> Browse Files
-                            </label>
-                            <input type="file" id="fileInput" accept="image/*" style="display:none;">
-                            <p class="file-info">Supports: JPG, PNG, WebP (Max 5MB)</p>
-                        </div>
+<!-- Option 2: File Upload - UPDATED -->
+<div class="image-source-panel" id="uploadPanel" style="display:none;">
+    <div class="file-upload-area" id="dropZone">
+        <div class="upload-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+        </div>
+        <p class="upload-title">Drag & Drop image here</p>
+        <span class="upload-or">or</span>
+        <label for="fileInput" class="file-browse-btn">
+            <i class="fas fa-folder-open"></i> Browse Files
+        </label>
+        <input type="file" id="fileInput" accept="image/*" style="display:none;">
+        <p class="file-info">
+            <i class="fas fa-info-circle"></i>
+            Supports: JPG, PNG, WebP, GIF (Max 5MB)
+        </p>
+    </div>
 
-                        <!-- Upload Progress -->
-                        <div class="upload-progress" id="uploadProgress" style="display:none;">
-                            <div class="progress-bar-wrap">
-                                <div class="progress-bar-fill" id="progressFill"></div>
-                            </div>
-                            <span class="progress-text" id="progressText">Uploading... 0%</span>
-                        </div>
+    <!-- Upload Progress -->
+    <div class="upload-progress" id="uploadProgress" style="display:none;">
+        <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+        <span class="progress-text" id="progressText">
+            <i class="fas fa-spinner"></i> Uploading... 0%
+        </span>
+    </div>
 
-                        <!-- Selected File Info -->
-                        <div class="selected-file" id="selectedFile" style="display:none;">
-                            <i class="fas fa-file-image"></i>
-                            <span id="selectedFileName">image.jpg</span>
-                            <span id="selectedFileSize">2.5 MB</span>
-                            <button type="button" class="remove-file-btn" id="removeFileBtn">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
+    <!-- Selected File Info -->
+    <div class="selected-file" id="selectedFile" style="display:none;">
+        <div class="file-icon">
+            <i class="fas fa-file-image"></i>
+        </div>
+        <div class="file-details">
+            <span class="file-name" id="selectedFileName">image.jpg</span>
+            <span class="file-size" id="selectedFileSize">2.5 MB</span>
+        </div>
+        <span class="file-status">
+            <i class="fas fa-check-circle"></i> Ready
+        </span>
+        <button type="button" class="remove-file-btn" id="removeFileBtn">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
 
                     <!-- Image Preview -->
                     <div class="image-preview-wrap">
