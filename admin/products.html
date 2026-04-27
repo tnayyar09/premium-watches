@@ -95,14 +95,17 @@
         <div class="modal-body">
             <form id="productForm">
                 <input type="hidden" id="productId">
+
                 <div class="form-group">
                     <label>Product Title *</label>
                     <input type="text" id="prodTitle" required placeholder="e.g. Rolex Submariner">
                 </div>
+
                 <div class="form-group">
                     <label>Short Description</label>
                     <textarea id="prodDescription" rows="3" placeholder="Brief description..."></textarea>
                 </div>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label>Price (Rs.) *</label>
@@ -113,6 +116,7 @@
                         <input type="number" id="prodOriginalPrice" min="0" step="0.01" placeholder="For discount">
                     </div>
                 </div>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label>Category *</label>
@@ -138,20 +142,74 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- IMAGE SECTION - NEW UPDATED -->
                 <div class="form-group">
-                    <label>Image URL *</label>
-                    <input type="url" id="prodImageUrl" required placeholder="https://example.com/image.jpg">
+                    <label><i class="fas fa-image"></i> Product Image *</label>
+
+                    <!-- Image Source Toggle -->
+                    <div class="image-source-toggle">
+                        <button type="button" class="source-btn active" id="urlSourceBtn">
+                            <i class="fas fa-link"></i> Image URL
+                        </button>
+                        <button type="button" class="source-btn" id="uploadSourceBtn">
+                            <i class="fas fa-upload"></i> Upload from Device
+                        </button>
+                    </div>
+
+                    <!-- Option 1: URL Input -->
+                    <div class="image-source-panel" id="urlPanel">
+                        <input type="url" id="prodImageUrl" placeholder="https://example.com/image.jpg">
+                    </div>
+
+                    <!-- Option 2: File Upload -->
+                    <div class="image-source-panel" id="uploadPanel" style="display:none;">
+                        <div class="file-upload-area" id="dropZone">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drag & Drop image here</p>
+                            <span>or</span>
+                            <label for="fileInput" class="file-browse-btn">
+                                <i class="fas fa-folder-open"></i> Browse Files
+                            </label>
+                            <input type="file" id="fileInput" accept="image/*" style="display:none;">
+                            <p class="file-info">Supports: JPG, PNG, WebP (Max 5MB)</p>
+                        </div>
+
+                        <!-- Upload Progress -->
+                        <div class="upload-progress" id="uploadProgress" style="display:none;">
+                            <div class="progress-bar-wrap">
+                                <div class="progress-bar-fill" id="progressFill"></div>
+                            </div>
+                            <span class="progress-text" id="progressText">Uploading... 0%</span>
+                        </div>
+
+                        <!-- Selected File Info -->
+                        <div class="selected-file" id="selectedFile" style="display:none;">
+                            <i class="fas fa-file-image"></i>
+                            <span id="selectedFileName">image.jpg</span>
+                            <span id="selectedFileSize">2.5 MB</span>
+                            <button type="button" class="remove-file-btn" id="removeFileBtn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Image Preview -->
                     <div class="image-preview-wrap">
                         <div class="image-preview" id="imagePreview">
-                            <i class="fas fa-image"></i><span>Image Preview</span>
+                            <i class="fas fa-image"></i>
+                            <span>Image Preview</span>
                         </div>
                     </div>
                 </div>
+
                 <div class="form-actions">
                     <button type="button" class="btn-cancel" id="cancelProduct">Cancel</button>
                     <button type="submit" class="btn-save" id="saveProductBtn">
-                        <span class="btn-text"><i class="fas fa-save"></i> Save</span>
-                        <span class="btn-loading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Saving...</span>
+                        <span class="btn-text"><i class="fas fa-save"></i> Save Product</span>
+                        <span class="btn-loading" style="display:none;">
+                            <i class="fas fa-spinner fa-spin"></i> Saving...
+                        </span>
                     </button>
                 </div>
             </form>
@@ -177,176 +235,454 @@
 
 <div class="toast-container" id="toastContainer"></div>
 
-    <script src="../js/config.js"></script>
-    <script src="js/admin.js"></script>
-    <script src="js/auth.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            checkAuth();
+<script src="../js/config.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/auth.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        checkAuth();
 
-            var productPage = 1;
-            var PRODUCTS_PER_PAGE = 8;
-            var deleteProductId = null;
+        var productPage = 1;
+        var PRODUCTS_PER_PAGE = 8;
+        var deleteProductId = null;
+        var selectedImageFile = null;
+        var currentImageSource = "url";
 
-            document.getElementById("addProductBtn").addEventListener("click", function() { openProductModal(null); });
-            document.getElementById("closeModal").addEventListener("click", closeProductModal);
-            document.getElementById("cancelProduct").addEventListener("click", closeProductModal);
-            document.getElementById("productModal").addEventListener("click", function(e) { if (e.target === this) { closeProductModal(); } });
+        // ========================================
+        // IMAGE SOURCE TOGGLE
+        // ========================================
+        var urlSourceBtn    = document.getElementById("urlSourceBtn");
+        var uploadSourceBtn = document.getElementById("uploadSourceBtn");
+        var urlPanel        = document.getElementById("urlPanel");
+        var uploadPanel     = document.getElementById("uploadPanel");
 
-            document.getElementById("prodFeatured").addEventListener("change", function() {
-                document.getElementById("featuredLabel").textContent = this.checked ? "Yes" : "No";
-            });
+        urlSourceBtn.addEventListener("click", function() {
+            currentImageSource = "url";
+            urlSourceBtn.classList.add("active");
+            uploadSourceBtn.classList.remove("active");
+            urlPanel.style.display    = "block";
+            uploadPanel.style.display = "none";
+        });
 
-            document.getElementById("prodImageUrl").addEventListener("input", function() {
-                var preview = document.getElementById("imagePreview");
-                if (this.value) {
-                    preview.innerHTML = "<img src=\"" + this.value + "\" alt=\"Preview\" style=\"width:100%;height:100%;object-fit:cover;\">";
-                } else {
-                    preview.innerHTML = "<i class=\"fas fa-image\"></i><span>Image Preview</span>";
-                }
-            });
+        uploadSourceBtn.addEventListener("click", function() {
+            currentImageSource = "upload";
+            uploadSourceBtn.classList.add("active");
+            urlSourceBtn.classList.remove("active");
+            uploadPanel.style.display = "block";
+            urlPanel.style.display    = "none";
+        });
 
-            var searchTimer = null;
-            document.getElementById("searchProducts").addEventListener("input", function() {
-                clearTimeout(searchTimer);
-                searchTimer = setTimeout(function() { loadProducts(1); }, 400);
-            });
-            document.getElementById("filterCategory").addEventListener("change", function() { loadProducts(1); });
-            document.getElementById("filterFeatured").addEventListener("change", function() { loadProducts(1); });
+        // ========================================
+        // FILE INPUT / DRAG & DROP
+        // ========================================
+        var fileInput = document.getElementById("fileInput");
+        var dropZone  = document.getElementById("dropZone");
 
-            document.getElementById("cancelDelete").addEventListener("click", function() {
-                document.getElementById("deleteModal").classList.remove("active");
-            });
+        dropZone.addEventListener("click", function() {
+            fileInput.click();
+        });
 
-            document.getElementById("confirmDelete").addEventListener("click", function() {
-                if (!deleteProductId) { return; }
-                adminDelete("products", deleteProductId).then(function(ok) {
-                    if (ok) { showToast("Deleted!", "success"); loadProducts(productPage); }
-                    else { showToast("Failed!", "error"); }
-                    document.getElementById("deleteModal").classList.remove("active");
-                    deleteProductId = null;
-                });
-            });
+        // Drag events
+        dropZone.addEventListener("dragover", function(e) {
+            e.preventDefault();
+            dropZone.classList.add("drag-over");
+        });
 
-            document.getElementById("productForm").addEventListener("submit", function(e) {
-                e.preventDefault();
-                saveProduct();
-            });
+        dropZone.addEventListener("dragleave", function() {
+            dropZone.classList.remove("drag-over");
+        });
 
-            function openProductModal(product) {
-                document.getElementById("productForm").reset();
-                document.getElementById("imagePreview").innerHTML = "<i class=\"fas fa-image\"></i><span>Image Preview</span>";
-                document.getElementById("featuredLabel").textContent = "No";
-                if (product) {
-                    document.getElementById("modalTitle").innerHTML = "<i class=\"fas fa-edit\"></i> Edit Product";
-                    document.getElementById("productId").value = product.id;
-                    document.getElementById("prodTitle").value = product.title || "";
-                    document.getElementById("prodDescription").value = product.short_description || "";
-                    document.getElementById("prodPrice").value = product.price || "";
-                    document.getElementById("prodOriginalPrice").value = product.original_price || "";
-                    document.getElementById("prodCategory").value = product.category || "";
-                    document.getElementById("prodFeatured").checked = product.is_featured ? true : false;
-                    document.getElementById("featuredLabel").textContent = product.is_featured ? "Yes" : "No";
-                    document.getElementById("prodImageUrl").value = product.image_url || "";
-                    if (product.image_url) {
-                        document.getElementById("imagePreview").innerHTML = "<img src=\"" + product.image_url + "\" alt=\"Preview\" style=\"width:100%;height:100%;object-fit:cover;\">";
-                    }
-                } else {
-                    document.getElementById("modalTitle").innerHTML = "<i class=\"fas fa-plus-circle\"></i> Add New Product";
-                    document.getElementById("productId").value = "";
-                }
-                document.getElementById("productModal").classList.add("active");
+        dropZone.addEventListener("drop", function(e) {
+            e.preventDefault();
+            dropZone.classList.remove("drag-over");
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                handleFileSelect(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener("change", function() {
+            if (this.files && this.files.length > 0) {
+                handleFileSelect(this.files[0]);
+            }
+        });
+
+        function handleFileSelect(file) {
+            // Validate file type
+            var allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+            if (allowedTypes.indexOf(file.type) === -1) {
+                showToast("Only JPG, PNG, WebP, GIF allowed!", "error");
+                return;
             }
 
-            function closeProductModal() {
-                document.getElementById("productModal").classList.remove("active");
+            // Validate file size (5MB max)
+            if (file.size > 5 * 1024 * 1024) {
+                showToast("File size must be under 5MB!", "error");
+                return;
             }
 
-            window.editProduct = function(id) {
-                adminQuery("products", { filters: ["id=eq." + id] }).then(function(r) {
-                    if (r.data && r.data.length > 0) { openProductModal(r.data[0]); }
-                });
+            selectedImageFile = file;
+
+            // Show selected file info
+            var selectedFileEl = document.getElementById("selectedFile");
+            document.getElementById("selectedFileName").textContent = file.name;
+            document.getElementById("selectedFileSize").textContent =
+                (file.size / (1024 * 1024)).toFixed(2) + " MB";
+            selectedFileEl.style.display = "flex";
+
+            // Show preview
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById("imagePreview").innerHTML =
+                    "<img src=\"" + e.target.result
+                    + "\" alt=\"Preview\" style=\"width:100%;height:100%;object-fit:cover;\">";
             };
+            reader.readAsDataURL(file);
+        }
 
-            window.deleteProduct = function(id, name) {
-                deleteProductId = id;
-                document.getElementById("deleteItemName").textContent = name;
-                document.getElementById("deleteModal").classList.add("active");
-            };
+        // Remove file button
+        document.getElementById("removeFileBtn").addEventListener("click", function() {
+            selectedImageFile = null;
+            fileInput.value   = "";
+            document.getElementById("selectedFile").style.display = "none";
+            document.getElementById("imagePreview").innerHTML =
+                "<i class=\"fas fa-image\"></i><span>Image Preview</span>";
+        });
 
-            function saveProduct() {
-                var btn = document.getElementById("saveProductBtn");
-                var btnText = btn.querySelector(".btn-text");
-                var btnLoading = btn.querySelector(".btn-loading");
-                btnText.style.display = "none";
-                btnLoading.style.display = "inline-flex";
-                var id = document.getElementById("productId").value;
-                var customCat = document.getElementById("prodCustomCategory").value.trim();
-                var body = {
-                    title: document.getElementById("prodTitle").value.trim(),
-                    short_description: document.getElementById("prodDescription").value.trim(),
-                    price: parseFloat(document.getElementById("prodPrice").value),
-                    category: customCat || document.getElementById("prodCategory").value,
-                    is_featured: document.getElementById("prodFeatured").checked,
-                    image_url: document.getElementById("prodImageUrl").value.trim()
-                };
-                var op = document.getElementById("prodOriginalPrice").value;
-                body.original_price = op ? parseFloat(op) : null;
-                var promise = id ? adminUpdate("products", id, body) : adminInsert("products", body);
-                promise.then(function(ok) {
-                    if (ok) { showToast(id ? "Updated!" : "Added!", "success"); closeProductModal(); loadProducts(productPage); }
-                    else { showToast("Failed!", "error"); }
-                    btnText.style.display = "inline-flex";
-                    btnLoading.style.display = "none";
-                });
-            }
+        // ========================================
+        // UPLOAD TO SUPABASE STORAGE
+        // ========================================
+        function uploadImageToSupabase(file) {
+            return new Promise(function(resolve, reject) {
+                // Generate unique filename
+                var timestamp = Date.now();
+                var random    = Math.random().toString(36).substring(2, 8);
+                var ext       = file.name.split(".").pop().toLowerCase();
+                var fileName  = "product_" + timestamp + "_" + random + "." + ext;
 
-            function loadProducts(page) {
-                if (!page) { page = 1; }
-                productPage = page;
-                var tbody = document.getElementById("productsTableBody");
-                tbody.innerHTML = "<tr><td colspan=\"7\" class=\"loading-cell\"><i class=\"fas fa-spinner fa-spin\"></i> Loading...</td></tr>";
-                var filters = [];
-                var catFilter = document.getElementById("filterCategory").value;
-                var featFilter = document.getElementById("filterFeatured").value;
-                if (catFilter) { filters.push("category=eq." + encodeURIComponent(catFilter)); }
-                if (featFilter) { filters.push("is_featured=eq." + featFilter); }
-                var offset = (page - 1) * PRODUCTS_PER_PAGE;
-                adminQuery("products", { filters: filters, order: "created_at.desc", limit: PRODUCTS_PER_PAGE, offset: offset, count: true })
-                .then(function(result) {
-                    var data = result.data;
-                    var count = result.count || 0;
-                    if (!data || data.length === 0) {
-                        tbody.innerHTML = "<tr><td colspan=\"7\" class=\"empty-cell\">No products found</td></tr>";
-                        document.getElementById("productsPagination").innerHTML = "";
-                        return;
+                var progressEl   = document.getElementById("uploadProgress");
+                var progressFill = document.getElementById("progressFill");
+                var progressText = document.getElementById("progressText");
+
+                progressEl.style.display = "block";
+                progressFill.style.width = "20%";
+                progressText.textContent = "Uploading... 20%";
+
+                var uploadUrl = SUPABASE_URL
+                    + "/storage/v1/object/product-images/"
+                    + fileName;
+
+                progressFill.style.width = "50%";
+                progressText.textContent = "Uploading... 50%";
+
+                fetch(uploadUrl, {
+                    method: "POST",
+                    headers: {
+                        "apikey":        SUPABASE_KEY,
+                        "Authorization": "Bearer " + SUPABASE_KEY,
+                        "Content-Type":  file.type,
+                        "x-upsert":      "true"
+                    },
+                    body: file
+                })
+                .then(function(res) {
+                    progressFill.style.width = "80%";
+                    progressText.textContent = "Processing... 80%";
+
+                    if (!res.ok) {
+                        return res.text().then(function(t) {
+                            console.error("Upload error:", t);
+                            reject("Upload failed: " + t);
+                        });
                     }
-                    var html = "";
-                    for (var i = 0; i < data.length; i++) {
-                        var p = data[i];
-                        var safeTitle = (p.title || "").replace(/'/g, "\\'");
-                        html += "<tr>"
-                            + "<td><img src=\"" + p.image_url + "\" class=\"table-img\" alt=\"\" onerror=\"this.src='https://via.placeholder.com/60'\"></td>"
-                            + "<td><strong>" + p.title + "</strong></td>"
-                            + "<td><span class=\"badge badge-blue\">" + (p.category || "General") + "</span></td>"
-                            + "<td><strong>Rs." + Number(p.price).toLocaleString("en-IN") + "</strong></td>"
-                            + "<td>" + (p.original_price ? "Rs." + Number(p.original_price).toLocaleString("en-IN") : "-") + "</td>"
-                            + "<td>" + (p.is_featured ? "<span class=\"badge badge-gold\">Yes</span>" : "<span class=\"badge badge-gray\">No</span>") + "</td>"
-                            + "<td><div class=\"action-btns\">"
-                            + "<button class=\"action-btn edit-btn\" onclick=\"editProduct(" + p.id + ")\" title=\"Edit\"><i class=\"fas fa-edit\"></i></button>"
-                            + "<button class=\"action-btn delete-btn\" onclick=\"deleteProduct(" + p.id + ", '" + safeTitle + "')\" title=\"Delete\"><i class=\"fas fa-trash\"></i></button>"
-                            + "</div></td></tr>";
-                    }
-                    tbody.innerHTML = html;
-                    var totalPages = Math.ceil(count / PRODUCTS_PER_PAGE);
-                    renderAdminPagination("productsPagination", page, totalPages, loadProducts);
-                });
-            }
 
+                    return res.json().then(function(data) {
+                        progressFill.style.width = "100%";
+                        progressText.textContent = "Complete! 100%";
+
+                        // Build public URL
+                        var publicUrl = SUPABASE_URL
+                            + "/storage/v1/object/public/product-images/"
+                            + fileName;
+
+                        setTimeout(function() {
+                            progressEl.style.display = "none";
+                        }, 1000);
+
+                        resolve(publicUrl);
+                    });
+                })
+                .catch(function(err) {
+                    progressEl.style.display = "none";
+                    console.error("Upload error:", err);
+                    reject("Upload failed");
+                });
+            });
+        }
+
+        // ========================================
+        // EXISTING LISTENERS (same as before)
+        // ========================================
+        document.getElementById("addProductBtn").addEventListener("click", function() {
+            openProductModal(null);
+        });
+        document.getElementById("closeModal").addEventListener("click", closeProductModal);
+        document.getElementById("cancelProduct").addEventListener("click", closeProductModal);
+        document.getElementById("productModal").addEventListener("click", function(e) {
+            if (e.target === this) { closeProductModal(); }
+        });
+
+        document.getElementById("prodFeatured").addEventListener("change", function() {
+            document.getElementById("featuredLabel").textContent = this.checked ? "Yes" : "No";
+        });
+
+        // URL input preview
+        document.getElementById("prodImageUrl").addEventListener("input", function() {
+            var preview = document.getElementById("imagePreview");
+            if (this.value) {
+                preview.innerHTML =
+                    "<img src=\"" + this.value
+                    + "\" alt=\"Preview\" style=\"width:100%;height:100%;object-fit:cover;\">";
+            } else {
+                preview.innerHTML =
+                    "<i class=\"fas fa-image\"></i><span>Image Preview</span>";
+            }
+        });
+
+        var searchTimer = null;
+        document.getElementById("searchProducts").addEventListener("input", function() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(function() { loadProducts(1); }, 400);
+        });
+        document.getElementById("filterCategory").addEventListener("change", function() {
             loadProducts(1);
         });
-    </script>
-</body>
-</html>
+        document.getElementById("filterFeatured").addEventListener("change", function() {
+            loadProducts(1);
+        });
+
+        document.getElementById("cancelDelete").addEventListener("click", function() {
+            document.getElementById("deleteModal").classList.remove("active");
+        });
+
+        document.getElementById("confirmDelete").addEventListener("click", function() {
+            if (!deleteProductId) { return; }
+            adminDelete("products", deleteProductId).then(function(ok) {
+                if (ok) { showToast("Deleted!", "success"); loadProducts(productPage); }
+                else    { showToast("Failed!", "error"); }
+                document.getElementById("deleteModal").classList.remove("active");
+                deleteProductId = null;
+            });
+        });
+
+        // ========================================
+        // FORM SUBMIT - UPDATED WITH UPLOAD
+        // ========================================
+        document.getElementById("productForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            saveProduct();
+        });
+
+        function openProductModal(product) {
+            document.getElementById("productForm").reset();
+            document.getElementById("imagePreview").innerHTML =
+                "<i class=\"fas fa-image\"></i><span>Image Preview</span>";
+            document.getElementById("featuredLabel").textContent = "No";
+
+            // Reset image upload
+            selectedImageFile = null;
+            currentImageSource = "url";
+            document.getElementById("selectedFile").style.display    = "none";
+            document.getElementById("uploadProgress").style.display  = "none";
+            urlSourceBtn.classList.add("active");
+            uploadSourceBtn.classList.remove("active");
+            urlPanel.style.display    = "block";
+            uploadPanel.style.display = "none";
+            fileInput.value = "";
+
+            if (product) {
+                document.getElementById("modalTitle").innerHTML =
+                    "<i class=\"fas fa-edit\"></i> Edit Product";
+                document.getElementById("productId").value        = product.id;
+                document.getElementById("prodTitle").value         = product.title || "";
+                document.getElementById("prodDescription").value   = product.short_description || "";
+                document.getElementById("prodPrice").value         = product.price || "";
+                document.getElementById("prodOriginalPrice").value = product.original_price || "";
+                document.getElementById("prodCategory").value      = product.category || "";
+                document.getElementById("prodFeatured").checked    = product.is_featured ? true : false;
+                document.getElementById("featuredLabel").textContent =
+                    product.is_featured ? "Yes" : "No";
+                document.getElementById("prodImageUrl").value = product.image_url || "";
+                if (product.image_url) {
+                    document.getElementById("imagePreview").innerHTML =
+                        "<img src=\"" + product.image_url
+                        + "\" alt=\"Preview\" style=\"width:100%;height:100%;object-fit:cover;\">";
+                }
+            } else {
+                document.getElementById("modalTitle").innerHTML =
+                    "<i class=\"fas fa-plus-circle\"></i> Add New Product";
+                document.getElementById("productId").value = "";
+            }
+
+            document.getElementById("productModal").classList.add("active");
+        }
+
+        function closeProductModal() {
+            document.getElementById("productModal").classList.remove("active");
+            selectedImageFile = null;
+        }
+
+        window.editProduct = function(id) {
+            adminQuery("products", { filters: ["id=eq." + id] }).then(function(r) {
+                if (r.data && r.data.length > 0) { openProductModal(r.data[0]); }
+            });
+        };
+
+        window.deleteProduct = function(id, name) {
+            deleteProductId = id;
+            document.getElementById("deleteItemName").textContent = name;
+            document.getElementById("deleteModal").classList.add("active");
+        };
+
+        function saveProduct() {
+            var btn        = document.getElementById("saveProductBtn");
+            var btnText    = btn.querySelector(".btn-text");
+            var btnLoading = btn.querySelector(".btn-loading");
+            btnText.style.display    = "none";
+            btnLoading.style.display = "inline-flex";
+
+            // Check if file upload needed
+            if (currentImageSource === "upload" && selectedImageFile) {
+                // Upload file first, then save product
+                uploadImageToSupabase(selectedImageFile)
+                .then(function(imageUrl) {
+                    saveProductToDatabase(imageUrl, btn, btnText, btnLoading);
+                })
+                .catch(function(err) {
+                    showToast("Image upload failed: " + err, "error");
+                    btnText.style.display    = "inline-flex";
+                    btnLoading.style.display = "none";
+                });
+            } else {
+                // URL mode - direct save
+                var imageUrl = document.getElementById("prodImageUrl").value.trim();
+                if (!imageUrl) {
+                    showToast("Please enter image URL or upload a file!", "error");
+                    btnText.style.display    = "inline-flex";
+                    btnLoading.style.display = "none";
+                    return;
+                }
+                saveProductToDatabase(imageUrl, btn, btnText, btnLoading);
+            }
+        }
+
+        function saveProductToDatabase(imageUrl, btn, btnText, btnLoading) {
+            var id        = document.getElementById("productId").value;
+            var customCat = document.getElementById("prodCustomCategory").value.trim();
+            var body = {
+                title:             document.getElementById("prodTitle").value.trim(),
+                short_description: document.getElementById("prodDescription").value.trim(),
+                price:             parseFloat(document.getElementById("prodPrice").value),
+                category:          customCat || document.getElementById("prodCategory").value,
+                is_featured:       document.getElementById("prodFeatured").checked,
+                image_url:         imageUrl
+            };
+            var op = document.getElementById("prodOriginalPrice").value;
+            body.original_price = op ? parseFloat(op) : null;
+
+            var promise = id
+                ? adminUpdate("products", id, body)
+                : adminInsert("products", body);
+
+            promise.then(function(ok) {
+                if (ok) {
+                    showToast(id ? "Updated!" : "Product added!", "success");
+                    closeProductModal();
+                    loadProducts(productPage);
+                } else {
+                    showToast("Save failed!", "error");
+                }
+                btnText.style.display    = "inline-flex";
+                btnLoading.style.display = "none";
+            });
+        }
+
+        // ========================================
+        // LOAD PRODUCTS (same as before)
+        // ========================================
+        function loadProducts(page) {
+            if (!page) { page = 1; }
+            productPage = page;
+            var tbody = document.getElementById("productsTableBody");
+            tbody.innerHTML =
+                "<tr><td colspan=\"7\" class=\"loading-cell\">"
+                + "<i class=\"fas fa-spinner fa-spin\"></i> Loading..."
+                + "</td></tr>";
+
+            var filters = [];
+            var catFilter  = document.getElementById("filterCategory").value;
+            var featFilter = document.getElementById("filterFeatured").value;
+            if (catFilter)  { filters.push("category=eq." + encodeURIComponent(catFilter)); }
+            if (featFilter) { filters.push("is_featured=eq." + featFilter); }
+
+            var offset = (page - 1) * PRODUCTS_PER_PAGE;
+
+            adminQuery("products", {
+                filters: filters,
+                order:   "created_at.desc",
+                limit:   PRODUCTS_PER_PAGE,
+                offset:  offset,
+                count:   true
+            })
+            .then(function(result) {
+                var data  = result.data;
+                var count = result.count || 0;
+                if (!data || data.length === 0) {
+                    tbody.innerHTML =
+                        "<tr><td colspan=\"7\" class=\"empty-cell\">No products found</td></tr>";
+                    document.getElementById("productsPagination").innerHTML = "";
+                    return;
+                }
+                var html = "";
+                for (var i = 0; i < data.length; i++) {
+                    var p = data[i];
+                    var safeTitle = (p.title || "").replace(/'/g, "\\'");
+                    html += "<tr>"
+                        + "<td><img src=\"" + p.image_url
+                        + "\" class=\"table-img\" alt=\"\""
+                        + " onerror=\"this.src='https://via.placeholder.com/60'\"></td>"
+                        + "<td><strong>" + p.title + "</strong></td>"
+                        + "<td><span class=\"badge badge-blue\">"
+                        + (p.category || "General") + "</span></td>"
+                        + "<td><strong>Rs."
+                        + Number(p.price).toLocaleString("en-IN") + "</strong></td>"
+                        + "<td>"
+                        + (p.original_price
+                            ? "Rs." + Number(p.original_price).toLocaleString("en-IN")
+                            : "-")
+                        + "</td>"
+                        + "<td>"
+                        + (p.is_featured
+                            ? "<span class=\"badge badge-gold\">Yes</span>"
+                            : "<span class=\"badge badge-gray\">No</span>")
+                        + "</td>"
+                        + "<td><div class=\"action-btns\">"
+                        + "<button class=\"action-btn edit-btn\" onclick=\"editProduct("
+                        + p.id + ")\" title=\"Edit\"><i class=\"fas fa-edit\"></i></button>"
+                        + "<button class=\"action-btn delete-btn\" onclick=\"deleteProduct("
+                        + p.id + ", '" + safeTitle + "')\" title=\"Delete\">"
+                        + "<i class=\"fas fa-trash\"></i></button>"
+                        + "</div></td></tr>";
+                }
+                tbody.innerHTML = html;
+                var totalPages = Math.ceil(count / PRODUCTS_PER_PAGE);
+                renderAdminPagination(
+                    "productsPagination", page, totalPages, loadProducts
+                );
+            });
+        }
+
+        loadProducts(1);
+    });
+</script>
 </body>
 </html>
